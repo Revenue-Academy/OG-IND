@@ -1,6 +1,5 @@
-from ogusa import estimate_beta_j, bequest_transmission, demographics
-from ogusa import macro_params, transfer_distribution, income
-from ogusa import get_micro_data, psid_data_setup
+from ogind import demographics
+from ogind import macro_params
 import os
 import numpy as np
 from ogcore import txfunc
@@ -9,7 +8,7 @@ import pkg_resources
 
 
 class Calibration:
-    """OG-USA calibration class"""
+    """OG-IND calibration class"""
 
     def __init__(
         self,
