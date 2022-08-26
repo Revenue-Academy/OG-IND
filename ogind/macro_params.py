@@ -23,18 +23,17 @@ def get_macro_params():
     baseline_date = datetime.datetime(2019, 3, 31)
 
     variable_dict = {
-        "GDP Per Capita": "A939RX0Q048SBEA",
-        "Labor share": "LABSHPUSA156NRUG",
-        "Debt held by foreigners": "FDHBFIN",
-        "Debt held by public": "FYGFDPUN",
-        "BAA Corp Bond Rates": "DBAA",
-        "10 year treasury rate": "DGS10",
-        "Total gov transfer payments": "B087RC1Q027SBEA",
-        "Social Security payments": "W823RC1",
-        "Gov expenditures": "FGEXPND",
-        "Gov interest payments": "A091RC1Q027SBEA",
-        "Real GDP": "GDPC1",
-        "Nominal GDP": "GDP",
+        "GDP Per Capita": "NYGDPPCAPKDIND",
+        "Labor share": "LABSHPINA156NRUG",
+        "Debt to GDP ratio": "GGGDTAINA188N",
+        #"BAA Corp Bond Rates": "DBAA",
+        "10 year govt bond rate": "INDIRLTLT01STM",
+        #"Total gov transfer payments": "B087RC1Q027SBEA",
+        #"Social Security payments": "W823RC1",
+        "Gov expenditures": "INDGFCEQDSMEI",
+        #"Gov interest payments": "A091RC1Q027SBEA",
+        "Real GDP": "RGDPNAINA666NRUG",
+        "Nominal GDP": "MKTGDPINA646NWDB",
     }
 
     # pull series of interest using pandas_datareader
@@ -63,7 +62,7 @@ def get_macro_params():
         .mean()
     )
     fred_data_a = fred_data[["Labor share"]]
-    fred_data_d = fred_data[["BAA Corp Bond Rates", "10 year treasury rate"]]
+    fred_data_d = fred_data[["BAA Corp Bond Rates", "10 year govt bond rate"]]
 
     # initialize a dictionary of parameters
     macro_parameters = {}
@@ -103,13 +102,13 @@ def get_macro_params():
 
     # # estimate r_gov_shift and r_gov_scale
     rate_data = fred_data_d[
-        ["10 year treasury rate", "BAA Corp Bond Rates"]
+        ["10 year govt bond rate", "BAA Corp Bond Rates"]
     ].dropna()
     rate_data["constant"] = np.ones(len(rate_data.index))
-    # mod = PanelOLS(fred_data['10 year treasury rate'],
+    # mod = PanelOLS(fred_data['10 year govt bond rate'],
     #                fred_data[['constant', 'BAA Corp Bond Rates']])
     mod = sm.OLS(
-        rate_data["10 year treasury rate"],
+        rate_data["10 year govt bond rate"],
         rate_data[["constant", "BAA Corp Bond Rates"]],
     )
     res = mod.fit()
