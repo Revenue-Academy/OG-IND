@@ -6,7 +6,7 @@ except ImportError:
 with open("README.md") as f:
     longdesc = f.read()
 
-version = "0.0.0"
+version = "0.0.1"
 
 config = {
     "description": "India Calibration for OG-Core",
@@ -31,6 +31,7 @@ config = {
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     "tests_require": ["pytest"],
