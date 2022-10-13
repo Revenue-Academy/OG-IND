@@ -23,6 +23,10 @@ dependencies:
 - pylint
 - coverage
 - requests
+- xlwt
+- openpyxl
+- statsmodels
+- linearmodels
 - black
 - pip:
   - jupyter-book>=0.9.1
