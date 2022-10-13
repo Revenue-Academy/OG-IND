@@ -26,9 +26,9 @@ def main():
     reform_dir = os.path.join(CUR_DIR, "OG-IND-Example", "OUTPUT_REFORM")
 
     """
-    ------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     Run baseline policy
-    ------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     """
     # Set up baseline parameterization
     p = Specifications(
@@ -54,19 +54,10 @@ def main():
     print("run time = ", time.time() - start_time)
 
     """
-    ------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     Run reform policy
-    ------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     """
-    # Grab a reform JSON file already in Tax-Calculator
-    # In this example the 'reform' is a change to 2017 law (the
-    # baseline policy is tax law in 2018)
-    reform_url = (
-        "github://PSLmodels:examples@main/psl_examples/"
-        + "taxcalc/2017_law.json"
-    )
-    ref = Calculator.read_json_param_objects(reform_url, None)
-    iit_reform = ref["policy"]
 
     # create new Specifications object for reform simulation
     p2 = Specifications(
@@ -85,21 +76,9 @@ def main():
             )
         )
     )
-    # Use calibration class to estimate reform tax functions from
-    # Tax-Calculator, specifing reform for Tax-Calculator in iit_reform
-    c2 = Calibration(
-        p2, iit_reform=iit_reform, estimate_tax_functions=True, client=client
-    )
-    # update tax function parameters in Specifications Object
-    d = c2.get_dict()
     # additional parameters to change
     updated_params = {
-        "cit_rate": [0.35],
-        "etr_params": d["etr_params"],
-        "mtrx_params": d["mtrx_params"],
-        "mtry_params": d["mtry_params"],
-        "mean_income_data": d["mean_income_data"],
-        "frac_tax_payroll": d["frac_tax_payroll"],
+        "cit_rate": [[0.35]],
     }
     p2.update_specifications(updated_params)
     # Run model
@@ -109,9 +88,9 @@ def main():
     client.close()
 
     """
-    ------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     Save some results of simulations
-    ------------------------------------------------------------------------
+    ---------------------------------------------------------------------------
     """
     base_tpi = safe_read_pickle(os.path.join(base_dir, "TPI", "TPI_vars.pkl"))
     base_params = safe_read_pickle(os.path.join(base_dir, "model_params.pkl"))
