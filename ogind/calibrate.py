@@ -53,9 +53,9 @@ class Calibration:
         # self.zeta = bequest_transmission.get_bequest_matrix()
 
         # demographics
-        # self.demographic_params = demographics.get_pop_objs(
-        #     p.E, p.S, p.T, 1, 100, p.start_year
-        # )
+        self.demographic_params = demographics.get_pop_objs(
+            p.E, p.S, p.T, 1, 100, p.start_year
+        )
         # demographics for 80 period lives (needed for getting e below)
         # demog80 = demographics.get_pop_objs(20, 80, p.T, 1, 100, p.start_year)
 
