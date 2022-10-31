@@ -372,6 +372,6 @@ class Calibration:
         # dict["zeta"] = self.zeta
         dict.update(self.macro_params)
         # dict["e"] = self.e
-        # dict.update(self.demographic_params)
+        dict.update(self.demographic_params)
 
         return dict

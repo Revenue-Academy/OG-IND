@@ -703,20 +703,43 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=False):
 
     # Generate time path of the nonstationary population distribution
     omega_path_lev = np.zeros((E + S, T + S))
-    pop_df = get_un_pop_data(download=False)
+    pop_df = get_un_pop_data(start_year=2019, end_year=2021, download=False)
+    pop_2020 = (
+        pop_df["pop"][
+            (
+                (pop_df["sex_num"] == 3)
+                & (pop_df["year"] == 2020)
+                & (pop_df["age"] < 100)
+            )
+        ]
+        .to_numpy()
+        .flatten()
+    )
     pop_2021 = (
-        pop_df["pop"][((pop_df["sex_num"] == 3) & (pop_df["age"] < 100))]
+        pop_df["pop"][
+            (
+                (pop_df["sex_num"] == 3)
+                & (pop_df["year"] == 2021)
+                & (pop_df["age"] < 100)
+            )
+        ]
         .to_numpy()
         .flatten()
     )
     age_per_EpS = np.arange(1, E + S + 1)
+    pop_2020_EpS = pop_rebin(pop_2020, E + S)
     pop_2021_EpS = pop_rebin(pop_2021, E + S)
+    pop_2020_pct = pop_2020_EpS / pop_2020_EpS.sum()
     pop_2021_pct = pop_2021_EpS / pop_2021_EpS.sum()
     # Age most recent population data to the current year of analysis
     pop_curr = pop_2021_EpS.copy()
     data_year = 2021
     if curr_year == data_year:
         omega_path_lev[:, 0] = pop_curr
+        g_n_curr = (
+            pop_curr[-S:].sum() - pop_2020_EpS[-S:].sum()
+        ) / pop_2020_EpS[-S:].sum()
+        pop_past = pop_2020_EpS.copy()
     elif curr_year > data_year:
         for per in range(curr_year - data_year):
             pop_next = np.dot(OMEGA_orig, pop_curr)

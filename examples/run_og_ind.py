@@ -38,6 +38,7 @@ def main():
         baseline_dir=base_dir,
         output_base=base_dir,
     )
+
     # Update parameters for baseline from default json file
     p.update_specifications(
         json.load(
@@ -48,6 +49,11 @@ def main():
             )
         )
     )
+
+    # Update parameters from calibrate.py Calibration class
+    c = Calibration(p)
+    updated_params = c.get_dict()
+    p.update_specifications(updated_params)
 
     # Run model
     start_time = time.time()
