@@ -5,7 +5,10 @@ model
 ------------------------------------------------------------------------
 """
 # Import packages
+from lib2to3.pgen2.pgen import DFAState
 import os
+import requests
+import json
 import numpy as np
 import scipy.optimize as opt
 import pandas as pd
@@ -26,6 +29,52 @@ if os.access(OUTPUT_DIR, os.F_OK) is False:
 Define functions
 ------------------------------------------------------------------------
 """
+
+
+def get_un_data(variable_code, country_id='356', start_year=2022,
+                end_year=2022):
+    """
+    This function retrieves data from the United Nations Data Portal API
+    for UN population data (see
+    https://population.un.org/dataportal/about/dataapi)
+
+    Args:
+        variable_code (str): variable code for UN data
+        country_id (str): country id for UN data
+        start_year (int): start year for UN data
+        end_year (int): end year for UN data
+
+    Returns:
+        df (Pandas DataFrame): DataFrame of UN data
+    """
+    target = (
+        "https://population.un.org/dataportalapi/api/v1/data/indicators/" +
+        variable_code + "/locations/" + country_id + "/start/"
+        + str(start_year) + "/end/" + str(end_year)
+    )
+
+    # get data from url
+    response = requests.get(target)
+    # Converts call into JSON
+    j = response.json()
+    # Convert JSON into a pandas DataFrame.
+    # pd.json_normalize flattens the JSON to accomodate nested lists
+    # within the JSON structure
+    df = pd.json_normalize(j['data'])
+    # Loop until there are new pages with data
+    while j['nextPage'] is not None:
+        # Reset the target to the next page
+        target = j['nextPage']
+        # call the API for the next page
+        response = requests.get(target)
+        # Convert response to JSON format
+        j = response.json()
+        # Store the next page in a data frame
+        df_temp = pd.json_normalize(j['data'])
+        # Append next page to the data frame
+        df = df.append(df_temp)
+
+    return df
 
 
 def get_fert(totpers, min_yr, max_yr, graph=False):
