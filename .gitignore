@@ -38,8 +38,7 @@ envs/
 *dask-worker-space*
 .ipynb_checkpoints*
 */__pycache__/*
-docs/book/_build/*.*
-docs/build*
-examples/OG-IND_example_plots/*
-examples/ogind_example_output.csv
-examples/OG-IND-Example/*
+docs/book/_build/*
+*/OG-IND_example_plots/*
+*/ogind_example_output.csv
+*/OG-IND-Example/*
