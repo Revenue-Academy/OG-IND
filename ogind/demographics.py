@@ -35,9 +35,11 @@ Define functions
 
 
 def get_un_fert_data(
-    country_id:str="356", start_year:int=2021, end_year:int=None,
-    download:bool=True
-)->pd.DataFrame:
+    country_id: str = "356",
+    start_year: int = 2021,
+    end_year: int = None,
+    download: bool = True,
+) -> pd.DataFrame:
     """
     Get UN fertility rate data for a country for some range of years (at least
     one year) and by age. These data come from the United Nations Data Portal
@@ -64,16 +66,26 @@ def get_un_fert_data(
 
     if download:
         pop_target = (
-            "https://population.un.org/dataportalapi/api/v1/data/indicators/" +
-            pop_code + "/locations/" + country_id +
-            "/start/" + str(start_year) + "/end/" + str(end_year) +
-            "?format=csv"
+            "https://population.un.org/dataportalapi/api/v1/data/indicators/"
+            + pop_code
+            + "/locations/"
+            + country_id
+            + "/start/"
+            + str(start_year)
+            + "/end/"
+            + str(end_year)
+            + "?format=csv"
         )
         fert_target = (
-            "https://population.un.org/dataportalapi/api/v1/data/indicators/" +
-            fert_code + "/locations/" + country_id +
-            "/start/" + str(start_year) + "/end/" + str(end_year) +
-            "?format=csv"
+            "https://population.un.org/dataportalapi/api/v1/data/indicators/"
+            + fert_code
+            + "/locations/"
+            + country_id
+            + "/start/"
+            + str(start_year)
+            + "/end/"
+            + str(end_year)
+            + "?format=csv"
         )
     else:
         pop_target = os.path.join(DATA_DIR, "un_ind_pop.csv")
@@ -81,60 +93,82 @@ def get_un_fert_data(
 
     # Convert .csv file to Pandas DataFrame
     pop_df = pd.read_csv(
-        pop_target, sep='|', header=1,
+        pop_target,
+        sep="|",
+        header=1,
         usecols=["TimeLabel", "SexId", "Sex", "AgeMid", "Value"],
-        float_precision='round_trip')
+        float_precision="round_trip",
+    )
     fert_rates_df = pd.read_csv(
-        fert_target, sep='|', header=1,
-        usecols=["TimeLabel", "AgeMid", "Value"], float_precision='round_trip'
+        fert_target,
+        sep="|",
+        header=1,
+        usecols=["TimeLabel", "AgeMid", "Value"],
+        float_precision="round_trip",
     )
 
     # Rename variables in the population and fertility rates data
     pop_df.rename(
-        columns={"TimeLabel": "year", "SexId": "sex_num", "Sex": "sex_str",
-                 "AgeMid": "age", "Value": "pop"},
-        inplace=True
+        columns={
+            "TimeLabel": "year",
+            "SexId": "sex_num",
+            "Sex": "sex_str",
+            "AgeMid": "age",
+            "Value": "pop",
+        },
+        inplace=True,
     )
     fert_rates_df.rename(
-        columns={"TimeLabel": "year", "AgeMid": "age",
-                 "Value": "births_p_1000f"},
-        inplace=True
+        columns={
+            "TimeLabel": "year",
+            "AgeMid": "age",
+            "Value": "births_p_1000f",
+        },
+        inplace=True,
     )
 
     # Clean the data
     # I don't know why in the pop_df population data by age and sex and year
     # there are 10 different population numbers for each sex and age and year
     # and all the other variables are equal. I just average them here.
-    pop_df = pop_df.groupby(
-        ["year","sex_num", "sex_str", "age"]
-    ).mean().reset_index()
+    pop_df = (
+        pop_df.groupby(["year", "sex_num", "sex_str", "age"])
+        .mean()
+        .reset_index()
+    )
 
     # Merge in the male and female population by age data
     fert_rates_df = fert_rates_df.merge(
-        pop_df[["year", "age", "pop"]][pop_df["sex_num"]==1], how="left",
-        on=["year", "age"]
+        pop_df[["year", "age", "pop"]][pop_df["sex_num"] == 1],
+        how="left",
+        on=["year", "age"],
     )
     fert_rates_df.rename(columns={"pop": "pop_male"}, inplace=True)
     fert_rates_df = fert_rates_df.merge(
-        pop_df[["year", "age", "pop"]][pop_df["sex_num"]==2], how="left",
-        on=["year", "age"]
+        pop_df[["year", "age", "pop"]][pop_df["sex_num"] == 2],
+        how="left",
+        on=["year", "age"],
     )
     fert_rates_df.rename(columns={"pop": "pop_female"}, inplace=True)
-    fert_rates_df["fert_rate"] = (
-        fert_rates_df["births_p_1000f"] /
-        (1000 *
-         (1 + (fert_rates_df["pop_male"] / fert_rates_df["pop_female"])))
+    fert_rates_df["fert_rate"] = fert_rates_df["births_p_1000f"] / (
+        1000 * (1 + (fert_rates_df["pop_male"] / fert_rates_df["pop_female"]))
     )
-    fert_rates_df = fert_rates_df[((fert_rates_df["year"]>=start_year) &
-                                   (fert_rates_df["year"]<=end_year))]
+    fert_rates_df = fert_rates_df[
+        (
+            (fert_rates_df["year"] >= start_year)
+            & (fert_rates_df["year"] <= end_year)
+        )
+    ]
 
     return fert_rates_df
 
 
 def get_un_mort_data(
-    country_id:str="356", start_year:int=2021, end_year:int=None,
-    download:bool=True
-)->pd.DataFrame:
+    country_id: str = "356",
+    start_year: int = 2021,
+    end_year: int = None,
+    download: bool = True,
+) -> pd.DataFrame:
     """
     Get UN mortality rate data for a country for some range of years (at least
     one year) and by age, and get infant mortality rate data. These data come
@@ -161,16 +195,26 @@ def get_un_mort_data(
 
     if download:
         infmort_target = (
-            "https://population.un.org/dataportalapi/api/v1/data/indicators/" +
-            infmort_code + "/locations/" + country_id +
-            "/start/" + str(start_year) + "/end/" + str(end_year) +
-            "?format=csv"
+            "https://population.un.org/dataportalapi/api/v1/data/indicators/"
+            + infmort_code
+            + "/locations/"
+            + country_id
+            + "/start/"
+            + str(start_year)
+            + "/end/"
+            + str(end_year)
+            + "?format=csv"
         )
         mort_target = (
-            "https://population.un.org/dataportalapi/api/v1/data/indicators/" +
-            mort_code + "/locations/" + country_id +
-            "/start/" + str(start_year) + "/end/" + str(end_year) +
-            "?format=csv"
+            "https://population.un.org/dataportalapi/api/v1/data/indicators/"
+            + mort_code
+            + "/locations/"
+            + country_id
+            + "/start/"
+            + str(start_year)
+            + "/end/"
+            + str(end_year)
+            + "?format=csv"
         )
     else:
         infmort_target = os.path.join(DATA_DIR, "un_ind_infmort.csv")
@@ -178,43 +222,68 @@ def get_un_mort_data(
 
     # Convert .csv file to Pandas DataFrame
     infmort_rate_df = pd.read_csv(
-        infmort_target, sep='|', header=1,
+        infmort_target,
+        sep="|",
+        header=1,
         usecols=["TimeLabel", "SexId", "Sex", "Value"],
-                 float_precision='round_trip')
+        float_precision="round_trip",
+    )
     mort_rates_df = pd.read_csv(
-        mort_target, sep='|', header=1,
+        mort_target,
+        sep="|",
+        header=1,
         usecols=["TimeLabel", "SexId", "Sex", "AgeStart", "Value"],
-                 float_precision='round_trip'
+        float_precision="round_trip",
     )
 
     # Rename variables in the population and fertility rates data
     infmort_rate_df.rename(
-        columns={"TimeLabel": "year", "SexId": "sex_num", "Sex": "sex_str",
-                 "Value": "inf_deaths_p_1000"},
-        inplace=True
+        columns={
+            "TimeLabel": "year",
+            "SexId": "sex_num",
+            "Sex": "sex_str",
+            "Value": "inf_deaths_p_1000",
+        },
+        inplace=True,
     )
     mort_rates_df.rename(
-        columns={"TimeLabel": "year", "SexId": "sex_num", "Sex": "sex_str",
-                 "AgeStart": "age", "Value": "mort_rate"},
-        inplace=True
+        columns={
+            "TimeLabel": "year",
+            "SexId": "sex_num",
+            "Sex": "sex_str",
+            "AgeStart": "age",
+            "Value": "mort_rate",
+        },
+        inplace=True,
     )
 
     # Clean the data
-    infmort_rate_df["infmort_rate"] = (infmort_rate_df["inf_deaths_p_1000"] /
-                                       1000)
+    infmort_rate_df["infmort_rate"] = (
+        infmort_rate_df["inf_deaths_p_1000"] / 1000
+    )
 
-    infmort_rate_df = infmort_rate_df[((infmort_rate_df["year"]>=start_year) &
-                                       (infmort_rate_df["year"]<=end_year))]
-    mort_rates_df = mort_rates_df[((mort_rates_df["year"]>=start_year) &
-                                   (mort_rates_df["year"]<=end_year))]
+    infmort_rate_df = infmort_rate_df[
+        (
+            (infmort_rate_df["year"] >= start_year)
+            & (infmort_rate_df["year"] <= end_year)
+        )
+    ]
+    mort_rates_df = mort_rates_df[
+        (
+            (mort_rates_df["year"] >= start_year)
+            & (mort_rates_df["year"] <= end_year)
+        )
+    ]
 
     return infmort_rate_df, mort_rates_df
 
 
 def get_un_pop_data(
-    country_id:str="356", start_year:int=2021, end_year:int=None,
-    download:bool=True
-)->pd.DataFrame:
+    country_id: str = "356",
+    start_year: int = 2021,
+    end_year: int = None,
+    download: bool = True,
+) -> pd.DataFrame:
     """
     Get UN population data for a country for some range of years (at least
     one year) and by age. These data come from the United Nations Data Portal
@@ -239,30 +308,44 @@ def get_un_pop_data(
 
     if download:
         pop_target = (
-            "https://population.un.org/dataportalapi/api/v1/data/indicators/" +
-            pop_code + "/locations/" + country_id +
-            "/start/" + str(start_year) + "/end/" + str(end_year) +
-            "?format=csv"
+            "https://population.un.org/dataportalapi/api/v1/data/indicators/"
+            + pop_code
+            + "/locations/"
+            + country_id
+            + "/start/"
+            + str(start_year)
+            + "/end/"
+            + str(end_year)
+            + "?format=csv"
         )
     else:
         pop_target = os.path.join(DATA_DIR, "un_ind_pop.csv")
 
     # Convert .csv file to Pandas DataFrame
     pop_df = pd.read_csv(
-        pop_target, sep='|', header=1,
+        pop_target,
+        sep="|",
+        header=1,
         usecols=["TimeLabel", "SexId", "Sex", "AgeStart", "Value"],
-        float_precision='round_trip')
+        float_precision="round_trip",
+    )
 
     # Rename variables in the population and fertility rates data
     pop_df.rename(
-        columns={"TimeLabel": "year", "SexId": "sex_num", "Sex": "sex_str",
-                 "AgeStart": "age", "Value": "pop"},
-        inplace=True
+        columns={
+            "TimeLabel": "year",
+            "SexId": "sex_num",
+            "Sex": "sex_str",
+            "AgeStart": "age",
+            "Value": "pop",
+        },
+        inplace=True,
     )
 
     # Clean the data
-    pop_df = pop_df[((pop_df["year"]>=start_year) &
-                     (pop_df["year"]<=end_year))]
+    pop_df = pop_df[
+        ((pop_df["year"] >= start_year) & (pop_df["year"] <= end_year))
+    ]
 
     return pop_df
 
@@ -286,27 +369,33 @@ def get_fert(totpers, min_yr, max_yr, graph=False):
     """
     # Get UN fertility rates for India for ages 15-49
     ages_15_49 = np.arange(15, 50)
-    fert_rates_15_49 = \
+    fert_rates_15_49 = (
         get_un_fert_data(download=False)["fert_rate"].to_numpy().flatten()
+    )
 
     # Extrapolate fertility rates for ages 1-14 and 50-100 using exponential
     # function
     ages_1_14 = np.arange(1, 15)
-    slope_15 = ((fert_rates_15_49[1] - fert_rates_15_49[0]) /
-                (ages_15_49[1] - ages_15_49[0]))
+    slope_15 = (fert_rates_15_49[1] - fert_rates_15_49[0]) / (
+        ages_15_49[1] - ages_15_49[0]
+    )
     fert_rates_1_14 = extrap_exp_3(
         ages_1_14, (15, fert_rates_15_49[0]), slope_15, (9, 0.0001), low=True
     )
     ages_50_100 = np.arange(50, 101)
-    slope_49 = ((fert_rates_15_49[-1] - fert_rates_15_49[-2]) /
-                (ages_15_49[-1] - ages_15_49[-2]))
-    fert_rates_50_100 = extrap_exp_3(
-        ages_50_100, (49, fert_rates_15_49[-1]), slope_49, (57, 0.0001),
-        low=False
+    slope_49 = (fert_rates_15_49[-1] - fert_rates_15_49[-2]) / (
+        ages_15_49[-1] - ages_15_49[-2]
     )
-    fert_rates = np.hstack((
-        fert_rates_1_14, fert_rates_15_49, fert_rates_50_100
-    ))
+    fert_rates_50_100 = extrap_exp_3(
+        ages_50_100,
+        (49, fert_rates_15_49[-1]),
+        slope_49,
+        (57, 0.0001),
+        low=False,
+    )
+    fert_rates = np.hstack(
+        (fert_rates_1_14, fert_rates_15_49, fert_rates_50_100)
+    )
     ages = np.arange(1, 101)
 
     if graph:  # Plot fertility rates
@@ -346,23 +435,34 @@ def get_mort(totpers, min_yr, max_yr, graph=False):
 
     """
     # Get UN infant mortality and mortality rate data by age
-    infmort_rate_df, mort_rates_df = get_un_mort_data(start_year=2021,
-                                                      download=False)
+    infmort_rate_df, mort_rates_df = get_un_mort_data(
+        start_year=2021, download=False
+    )
     infmort_rate = infmort_rate_df["infmort_rate"][
-        infmort_rate_df["sex_num"]==3
+        infmort_rate_df["sex_num"] == 3
     ].to_numpy()[0]
-    mort_rates = mort_rates_df["mort_rate"][
-        ((mort_rates_df["sex_num"]==3) & (mort_rates_df["age"]<100))
-    ].to_numpy().flatten()
+    mort_rates = (
+        mort_rates_df["mort_rate"][
+            ((mort_rates_df["sex_num"] == 3) & (mort_rates_df["age"] < 100))
+        ]
+        .to_numpy()
+        .flatten()
+    )
 
     if graph:
         ages_all = np.arange(0, 101)
         mort_rates_all = np.hstack((infmort_rate, mort_rates))
         plt.plot(ages_all, mort_rates_all, label="Data")
-        plt.scatter(0, infmort_rate, c="blue", marker="d",
-                    label="Infant mortality rate")
-        plt.scatter(100, 1.0, c="red", marker="d",
-                    label="Artificial mortality limit")
+        plt.scatter(
+            0,
+            infmort_rate,
+            c="blue",
+            marker="d",
+            label="Infant mortality rate",
+        )
+        plt.scatter(
+            100, 1.0, c="red", marker="d", label="Artificial mortality limit"
+        )
         plt.xlabel(r"Age $s$")
         plt.ylabel(r"Mortality rate $\rho_{s}$")
         plt.legend(loc="upper left")
@@ -443,32 +543,57 @@ def get_imm_resid(totpers, min_yr, max_yr, graph=False):
 
     """
     pop_df = get_un_pop_data(start_year=2019, end_year=2021, download=False)
-    pop_2019 = pop_df["pop"][((pop_df["sex_num"]==3) & (pop_df["year"]==2019) &
-                              (pop_df["age"]<100))].to_numpy().flatten()
-    pop_2020 = pop_df["pop"][((pop_df["sex_num"]==3) & (pop_df["year"]==2020) &
-                              (pop_df["age"]<100))].to_numpy().flatten()
-    pop_2021 = pop_df["pop"][((pop_df["sex_num"]==3) & (pop_df["year"]==2021) &
-                              (pop_df["age"]<100))].to_numpy().flatten()
+    pop_2019 = (
+        pop_df["pop"][
+            (
+                (pop_df["sex_num"] == 3)
+                & (pop_df["year"] == 2019)
+                & (pop_df["age"] < 100)
+            )
+        ]
+        .to_numpy()
+        .flatten()
+    )
+    pop_2020 = (
+        pop_df["pop"][
+            (
+                (pop_df["sex_num"] == 3)
+                & (pop_df["year"] == 2020)
+                & (pop_df["age"] < 100)
+            )
+        ]
+        .to_numpy()
+        .flatten()
+    )
+    pop_2021 = (
+        pop_df["pop"][
+            (
+                (pop_df["sex_num"] == 3)
+                & (pop_df["year"] == 2021)
+                & (pop_df["age"] < 100)
+            )
+        ]
+        .to_numpy()
+        .flatten()
+    )
     fert_rates = get_fert(totpers, min_yr, max_yr)
     mort_rates, infmort_rate = get_mort(totpers, min_yr, max_yr)
 
     # Create two years of estimated immigration rates, then take average
     imm_rate_1_2020 = (
-        (pop_2021[0] - (1 - infmort_rate) * (fert_rates * pop_2020).sum()) /
-        pop_2020[0]
-    )
+        pop_2021[0] - (1 - infmort_rate) * (fert_rates * pop_2020).sum()
+    ) / pop_2020[0]
     imm_rate_1_2019 = (
-        (pop_2021[0] - (1 - infmort_rate) * (fert_rates * pop_2020).sum()) /
-        pop_2020[0]
-    )
+        pop_2021[0] - (1 - infmort_rate) * (fert_rates * pop_2020).sum()
+    ) / pop_2020[0]
     imm_rate_1 = (imm_rate_1_2020 + imm_rate_1_2019) / 2
 
     imm_rates_s_2020 = (
-        (pop_2021[1:] - (1 - mort_rates[:-1]) * pop_2020[:-1]) / pop_2020[1:]
-    )
+        pop_2021[1:] - (1 - mort_rates[:-1]) * pop_2020[:-1]
+    ) / pop_2020[1:]
     imm_rates_s_2019 = (
-        (pop_2020[1:] - (1 - mort_rates[:-1]) * pop_2019[:-1]) / pop_2019[1:]
-    )
+        pop_2020[1:] - (1 - mort_rates[:-1]) * pop_2019[:-1]
+    ) / pop_2019[1:]
     imm_rates_s = (imm_rates_s_2020 + imm_rates_s_2019) / 2
     imm_rates = np.hstack((imm_rate_1, imm_rates_s))
     if graph:
@@ -579,9 +704,11 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=False):
     # Generate time path of the nonstationary population distribution
     omega_path_lev = np.zeros((E + S, T + S))
     pop_df = get_un_pop_data(download=False)
-    pop_2021 = pop_df["pop"][
-        ((pop_df["sex_num"]==3) & (pop_df["age"]<100))
-    ].to_numpy().flatten()
+    pop_2021 = (
+        pop_df["pop"][((pop_df["sex_num"] == 3) & (pop_df["age"] < 100))]
+        .to_numpy()
+        .flatten()
+    )
     age_per_EpS = np.arange(1, E + S + 1)
     pop_2021_EpS = pop_rebin(pop_2021, E + S)
     pop_2021_pct = pop_2021_EpS / pop_2021_EpS.sum()
@@ -593,8 +720,9 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=False):
     elif curr_year > data_year:
         for per in range(curr_year - data_year):
             pop_next = np.dot(OMEGA_orig, pop_curr)
-            g_n_curr = ((pop_next[-S:].sum() - pop_curr[-S:].sum()) /
-                        pop_curr[-S:].sum())
+            g_n_curr = (pop_next[-S:].sum() - pop_curr[-S:].sum()) / pop_curr[
+                -S:
+            ].sum()
             pop_past = pop_curr.copy()
             pop_curr = pop_next.copy()
         omega_path_lev[:, 0] = pop_curr
@@ -809,7 +937,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=False):
 
 
 def extrap_exp_3(
-    x_vals, con_val:tuple, con_slope:float, eps_val:tuple, low:bool=True
+    x_vals, con_val: tuple, con_slope: float, eps_val: tuple, low: bool = True
 ):
     """
     This function fits a smooth exponential extrapolation to either the low end
@@ -837,17 +965,21 @@ def extrap_exp_3(
     """
     if low:
         if con_slope <= 0:
-            err_msg = ("ERROR extrap_exp_3: con_slope must be positive if " +
-                        "extrapolating to the low end of the data.")
+            err_msg = (
+                "ERROR extrap_exp_3: con_slope must be positive if "
+                + "extrapolating to the low end of the data."
+            )
             raise ValueError(err_msg)
     else:
         if con_slope >= 0:
-            err_msg = ("ERROR extrap_exp_3: con_slope must be negative if " +
-                        "extrapolating to the high end of the data.")
+            err_msg = (
+                "ERROR extrap_exp_3: con_slope must be negative if "
+                + "extrapolating to the high end of the data."
+            )
             raise ValueError(err_msg)
 
     eps_slope_low = 0.0001
-    eps_slope_high = - eps_slope_low
+    eps_slope_high = -eps_slope_low
 
     # Unpack the coordinates
     x_con, y_con = con_val
@@ -855,15 +987,17 @@ def extrap_exp_3(
 
     # check if linear extrapolation intersects zero beyond x_eps
     lin_y_intercept = y_con - con_slope * x_con
-    x_intercept =  - lin_y_intercept / con_slope
+    x_intercept = -lin_y_intercept / con_slope
     if low:
         lin_extrap_overshoot = x_intercept < x_eps
     else:
         lin_extrap_overshoot = x_intercept > x_eps
     if lin_extrap_overshoot:
         # Estimate an arctangent function to fit the data
-        print("WARNING: extrap_exp_3: Linear extrapolation overshoots " +
-                "furthest value. Using arctangent function instead.")
+        print(
+            "WARNING: extrap_exp_3: Linear extrapolation overshoots "
+            + "furthest value. Using arctangent function instead."
+        )
         y_vals = extrap_arctan_3(x_vals, con_slope, x_con, y_con, x_eps, low)
     else:
         # Estimate an exponential function to fit the data
@@ -874,11 +1008,14 @@ def extrap_exp_3(
         a_guess = 0.1
         b_guess = 0.1
         ab_guess = np.array([a_guess, b_guess])
-        solution = opt.root(ab_zero_eqs_exp_func, ab_guess, args=params,
-                            method='lm')
+        solution = opt.root(
+            ab_zero_eqs_exp_func, ab_guess, args=params, method="lm"
+        )
         if not solution.success:
-            err_msg = ("ERROR extrap_exp_3: Root finder failed in " +
-                       "ab_zero_eqs_exp_func.")
+            err_msg = (
+                "ERROR extrap_exp_3: Root finder failed in "
+                + "ab_zero_eqs_exp_func."
+            )
             raise ValueError(err_msg)
         a, b = solution.x
         if low:
@@ -889,24 +1026,38 @@ def extrap_exp_3(
             y_pos_ind = x_vals <= x_eps
         # b = np.log(con_slope / (a * np.exp(a * x_con)))
         # c = y_con - np.exp(a * x_con + b)
-        c = np.log(y_con) - a * (x_con ** 2) - b * x_con
+        c = np.log(y_con) - a * (x_con**2) - b * x_con
 
         len_x_vals = len(x_vals)
         len_y_pos_ind = y_pos_ind.sum()
         if low:
-            y_vals = np.hstack((np.zeros(len_x_vals - len_y_pos_ind),
-                                np.exp(a * (x_vals[y_pos_ind] ** 2) +
-                                       b * x_vals[y_pos_ind] + c)))
+            y_vals = np.hstack(
+                (
+                    np.zeros(len_x_vals - len_y_pos_ind),
+                    np.exp(
+                        a * (x_vals[y_pos_ind] ** 2)
+                        + b * x_vals[y_pos_ind]
+                        + c
+                    ),
+                )
+            )
         else:
-            y_vals = np.hstack((np.exp(a * (x_vals[y_pos_ind] ** 2) +
-                                       b * x_vals[y_pos_ind] + c),
-                                np.zeros(len_x_vals - len_y_pos_ind)))
+            y_vals = np.hstack(
+                (
+                    np.exp(
+                        a * (x_vals[y_pos_ind] ** 2)
+                        + b * x_vals[y_pos_ind]
+                        + c
+                    ),
+                    np.zeros(len_x_vals - len_y_pos_ind),
+                )
+            )
 
     return y_vals
 
 
 def extrap_arctan_3(
-    x_vals, con_slope:float, x_con, y_con, x_eps, low:bool=True
+    x_vals, con_slope: float, x_con, y_con, x_eps, low: bool = True
 ):
     """
     This function fits an arctangent function to extrapolate data that
@@ -949,50 +1100,60 @@ def extrap_arctan_3(
     b_guess = 20.0
     solution = opt.root(b_zero_eq_arctan_func, b_guess, args=params)
     if not solution.success:
-        err_msg = ("ERROR extrap_arctan_3: Root finder failed in " +
-                    "b_zero_eq_arctan_func.")
+        err_msg = (
+            "ERROR extrap_arctan_3: Root finder failed in "
+            + "b_zero_eq_arctan_func."
+        )
         raise ValueError(err_msg)
     b = solution.x
 
     len_x_vals = len(x_vals)
 
     if low:
-        a = (y_con /
-             ((1 / np.pi) * np.arctan((b / 3) * (x_con - x_eps)) +(1 / 2)))
+        a = y_con / (
+            (1 / np.pi) * np.arctan((b / 3) * (x_con - x_eps)) + (1 / 2)
+        )
         c = -b * ((2 / 3) * x_con + (1 / 3) * x_eps)
         y_pos_ind = x_vals >= x_eps
         len_y_pos_ind = y_pos_ind.sum()
-        y_vals = np.hstack((
-            np.zeros(len_x_vals - len_y_pos_ind),
-            (a / np.pi) * np.arctan(b * x_vals[y_pos_ind] + c) + (a / 2)
-        ))
+        y_vals = np.hstack(
+            (
+                np.zeros(len_x_vals - len_y_pos_ind),
+                (a / np.pi) * np.arctan(b * x_vals[y_pos_ind] + c) + (a / 2),
+            )
+        )
     else:
-        a = (y_con /
-             ((-1 / np.pi) * np.arctan((b / 3) * (x_con - x_eps)) +(1 / 2)))
+        a = y_con / (
+            (-1 / np.pi) * np.arctan((b / 3) * (x_con - x_eps)) + (1 / 2)
+        )
         c = -b * ((2 / 3) * x_con + (1 / 3) * x_eps)
         y_pos_ind = x_vals <= x_eps
         len_y_pos_ind = y_pos_ind.sum()
-        y_vals = np.hstack((
-            (-a / np.pi) * np.arctan(b * x_vals[y_pos_ind] + c) + (a / 2),
-            np.zeros(len_x_vals - len_y_pos_ind)
-        ))
+        y_vals = np.hstack(
+            (
+                (-a / np.pi) * np.arctan(b * x_vals[y_pos_ind] + c) + (a / 2),
+                np.zeros(len_x_vals - len_y_pos_ind),
+            )
+        )
 
     return y_vals
 
 
 def ab_zero_eqs_exp_func(ab_vals, params):
-    """"
+    """ "
     This function returns a vector of error values for the two zero equations
     in terms of parameters a and b for given values of a and b.
     """
     con_slope, x_con, y_con, x_eps, eps = params
     a, b = ab_vals
 
-    c = np.log(y_con) - a * (x_con ** 2) - b * x_con
-    error_1 = ((2 * a * x_con + b) * np.exp(a * (x_con ** 2) + b * x_con + c) -
-               con_slope)
-    error_2 = ((2 * a * x_eps + b) * np.exp(a * (x_eps ** 2) + b * x_eps + c) -
-               eps)
+    c = np.log(y_con) - a * (x_con**2) - b * x_con
+    error_1 = (2 * a * x_con + b) * np.exp(
+        a * (x_con**2) + b * x_con + c
+    ) - con_slope
+    error_2 = (2 * a * x_eps + b) * np.exp(
+        a * (x_eps**2) + b * x_eps + c
+    ) - eps
 
     error_vec = np.array([error_1, error_2])
 
@@ -1000,23 +1161,27 @@ def ab_zero_eqs_exp_func(ab_vals, params):
 
 
 def b_zero_eq_arctan_func(b, params):
-    """"
+    """ "
     This function returns a scalar error value of the univariate error function
     in parameter b for given values of b.
     """
     con_slope, x_con, y_con, x_eps, low = params
 
     if low:
-        a = (y_con /
-             ((1 / np.pi) * np.arctan((b / 3) * (x_con - x_eps)) +(1 / 2)))
-        a_other = (con_slope * np.pi *
-                   (1 + ((b / 3) ** 2) * ((x_con - x_eps) ** 2))) / b
+        a = y_con / (
+            (1 / np.pi) * np.arctan((b / 3) * (x_con - x_eps)) + (1 / 2)
+        )
+        a_other = (
+            con_slope * np.pi * (1 + ((b / 3) ** 2) * ((x_con - x_eps) ** 2))
+        ) / b
         error_val = a_other - a
     else:
-        a = (y_con /
-             ((-1 / np.pi) * np.arctan((b / 3) * (x_con - x_eps)) +(1 / 2)))
-        a_other = (-con_slope * np.pi *
-                   (1 + ((b / 3) ** 2) * ((x_con - x_eps) ** 2))) / b
+        a = y_con / (
+            (-1 / np.pi) * np.arctan((b / 3) * (x_con - x_eps)) + (1 / 2)
+        )
+        a_other = (
+            -con_slope * np.pi * (1 + ((b / 3) ** 2) * ((x_con - x_eps) ** 2))
+        ) / b
         error_val = a_other - a
 
     return error_val
