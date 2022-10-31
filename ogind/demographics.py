@@ -52,14 +52,6 @@ def get_un_fert_data(
             If False, a path must be specified in the path_folder argument.
         path_folder (None or str): string path to folder where data are stored
 
-    Variable codes:
-        22: Infant mortality rate (IMR)
-        47: Population by 1-year age groups and sex
-        68: Fertility rates by age of mother (1-year)
-        69: Deaths by 1-year age groups and sex
-        74: Births by age of mother (1-year)
-        80: Age specific mortality rate m(x,n) - complete
-
     Returns:
         fert_rates_df (DataFrame): dataset with fertility rates by age
     """
@@ -157,12 +149,6 @@ def get_un_mort_data(
             If False, a path must be specified in the path_folder argument.
         path_folder (None or str): string path to folder where data are stored
 
-    Variable codes:
-        22: Infant mortality rate (IMR)
-        47: Population by 1-year age groups and sex
-        69: Deaths by 1-year age groups and sex
-        80: Age specific mortality rate m(x,n) - complete
-
     Returns:
         fert_rates_df (DataFrame): dataset with fertility rates by age
     """
@@ -225,56 +211,60 @@ def get_un_mort_data(
     return infmort_rate_df, mort_rates_df
 
 
-# def get_un_data(
-#     variable_code, country_id="356", start_year=2022, end_year=2022
-# ):
-#     """
-#     This function retrieves data from the United Nations Data Portal API
-#     for UN population data (see
-#     https://population.un.org/dataportal/about/dataapi)
+def get_un_pop_data(
+    country_id:str="356", start_year:int=2021, end_year:int=None,
+    download:bool=True
+)->pd.DataFrame:
+    """
+    Get UN population data for a country for some range of years (at least
+    one year) and by age. These data come from the United Nations Data Portal
+    API for UN population data (see
+    https://population.un.org/dataportal/about/dataapi)
 
-#     Args:
-#         variable_code (str): variable code for UN data
-#         country_id (str): country id for UN data
-#         start_year (int): start year for UN data
-#         end_year (int): end year for UN data
+    Args:
+        country_id (str): 3-digit country id (numerical)
+        start_year (int): beginning year of the data
+        end_year (int): end year of the data
+        download (bool): whether to download the data from the UN Data Portal.
+            If False, a path must be specified in the path_folder argument.
+        path_folder (None or str): string path to folder where data are stored
 
-#     Returns:
-#         df (Pandas DataFrame): DataFrame of UN data
-#     """
-#     target = (
-#         "https://population.un.org/dataportalapi/api/v1/data/indicators/"
-#         + variable_code
-#         + "/locations/"
-#         + country_id
-#         + "/start/"
-#         + str(start_year)
-#         + "/end/"
-#         + str(end_year)
-#     )
+    Returns:
+        fert_rates_df (DataFrame): dataset with fertility rates by age
+    """
+    if end_year is None:
+        end_year = start_year
+    # UN variable code for Population by 1-year age groups and sex
+    pop_code = "47"
 
-#     # get data from url
-#     response = requests.get(target)
-#     # Converts call into JSON
-#     j = response.json()
-#     # Convert JSON into a pandas DataFrame.
-#     # pd.json_normalize flattens the JSON to accomodate nested lists
-#     # within the JSON structure
-#     df = pd.json_normalize(j["data"])
-#     # Loop until there are new pages with data
-#     while j["nextPage"] is not None:
-#         # Reset the target to the next page
-#         target = j["nextPage"]
-#         # call the API for the next page
-#         response = requests.get(target)
-#         # Convert response to JSON format
-#         j = response.json()
-#         # Store the next page in a data frame
-#         df_temp = pd.json_normalize(j["data"])
-#         # Append next page to the data frame
-#         df = df.append(df_temp)
+    if download:
+        pop_target = (
+            "https://population.un.org/dataportalapi/api/v1/data/indicators/" +
+            pop_code + "/locations/" + country_id +
+            "/start/" + str(start_year) + "/end/" + str(end_year) +
+            "?format=csv"
+        )
+    else:
+        pop_target = os.path.join(DATA_DIR, "un_ind_pop.csv")
 
-#     return df
+    # Convert .csv file to Pandas DataFrame
+    pop_df = pd.read_csv(
+        pop_target, sep='|', header=1,
+        usecols=["TimeLabel", "SexId", "Sex", "AgeStart", "Value"],
+        float_precision='round_trip')
+
+    # Rename variables in the population and fertility rates data
+    pop_df.rename(
+        columns={"TimeLabel": "year", "SexId": "sex_num", "Sex": "sex_str",
+                 "AgeStart": "age", "Value": "pop"},
+        inplace=True
+    )
+
+    # Clean the data
+    pop_df = pop_df[((pop_df["year"]>=start_year) &
+                     (pop_df["year"]<=end_year))]
+
+    return pop_df
 
 
 def get_fert(totpers, min_yr, max_yr, graph=False):
@@ -432,7 +422,7 @@ def pop_rebin(curr_pop_dist, totpers_new):
     return curr_pop_new
 
 
-def get_imm_resid(totpers, min_yr, max_yr):
+def get_imm_resid(totpers, min_yr, max_yr, graph=False):
     """
     Calculate immigration rates by age as a residual given population
     levels in different periods, then output average calculated
@@ -452,44 +442,43 @@ def get_imm_resid(totpers, min_yr, max_yr):
             each period of life, length E+S
 
     """
-    pop_file = utils.read_file(
-        CUR_PATH, os.path.join("data", "demographic", "india_pop_data.csv")
+    pop_df = get_un_pop_data(start_year=2019, end_year=2021, download=False)
+    pop_2019 = pop_df["pop"][((pop_df["sex_num"]==3) & (pop_df["year"]==2019) &
+                              (pop_df["age"]<100))].to_numpy().flatten()
+    pop_2020 = pop_df["pop"][((pop_df["sex_num"]==3) & (pop_df["year"]==2020) &
+                              (pop_df["age"]<100))].to_numpy().flatten()
+    pop_2021 = pop_df["pop"][((pop_df["sex_num"]==3) & (pop_df["year"]==2021) &
+                              (pop_df["age"]<100))].to_numpy().flatten()
+    fert_rates = get_fert(totpers, min_yr, max_yr)
+    mort_rates, infmort_rate = get_mort(totpers, min_yr, max_yr)
+
+    # Create two years of estimated immigration rates, then take average
+    imm_rate_1_2020 = (
+        (pop_2021[0] - (1 - infmort_rate) * (fert_rates * pop_2020).sum()) /
+        pop_2020[0]
     )
-    pop_data = pd.read_csv(pop_file, encoding="utf-8")
-    pop_data_samp = pop_data[
-        (pop_data["Age"] >= min_yr - 1) & (pop_data["Age"] <= max_yr - 1)
-    ]
-    age_year_all = pop_data_samp["Age"] + 1
-    pop_2001, pop_2011 = (
-        np.array(pop_data_samp["2001"], dtype="f"),
-        np.array(pop_data_samp["2011"], dtype="f"),
+    imm_rate_1_2019 = (
+        (pop_2021[0] - (1 - infmort_rate) * (fert_rates * pop_2020).sum()) /
+        pop_2020[0]
     )
-    pop_2001_EpS = pop_rebin(pop_2001, totpers)
-    pop_2011_EpS = pop_rebin(pop_2011, totpers)
-    # Create three years of estimated immigration rates for youngest age
-    # individuals
-    imm_mat = np.zeros((2, totpers))
-    fert_rates = get_fert(totpers, min_yr, max_yr, False)
-    mort_rates, infmort_rate = get_mort(totpers, min_yr, max_yr, False)
-    newbornvec = np.dot(fert_rates, pop_2001_EpS).T
-    # imm_mat[:, 0] = ((pop_2011_EpS[0] - (1 - infmort_rate) * newbornvec)
-    #                  / pop_2001_EpS[0])
-    imm_mat[:, 0] = 0
-    # Estimate immigration rates for all other-aged
-    # individuals
-    mort_rate10 = np.zeros_like(mort_rates[:-10])  # 10-year mort rate
-    for i in range(10):
-        mort_rate10 = mort_rates[i : -10 + i] + mort_rate10
-    mort_rate10[mort_rate10 > 1.0] = 1.0
-    imm_mat[:, 10:] = (
-        pop_2011_EpS[10:] - (1 - mort_rate10) * pop_2001_EpS[:-10]
-    ) / pop_2001_EpS[10:]
-    # Final estimated immigration rates are the averages over years
-    imm_rates = imm_mat.mean(axis=0)
-    neg_rates = imm_rates < 0
-    # For India, data were 10 years apart, so make annual rate
-    imm_rates = ((1 + np.absolute(imm_rates)) ** (1 / 10)) - 1
-    imm_rates[neg_rates] = -1 * imm_rates[neg_rates]
+    imm_rate_1 = (imm_rate_1_2020 + imm_rate_1_2019) / 2
+
+    imm_rates_s_2020 = (
+        (pop_2021[1:] - (1 - mort_rates[:-1]) * pop_2020[:-1]) / pop_2020[1:]
+    )
+    imm_rates_s_2019 = (
+        (pop_2020[1:] - (1 - mort_rates[:-1]) * pop_2019[:-1]) / pop_2019[1:]
+    )
+    imm_rates_s = (imm_rates_s_2020 + imm_rates_s_2019) / 2
+    imm_rates = np.hstack((imm_rate_1, imm_rates_s))
+    if graph:
+        ages = np.arange(min_yr, max_yr + 1)
+        plt.plot(ages, imm_rates, label="Residual data")
+        plt.xlabel(r"Age $s$")
+        plt.ylabel(r"immigration rates $\i_s$")
+        output_path = os.path.join(OUTPUT_DIR, "imm_rates")
+        plt.savefig(output_path)
+        plt.close()
 
     return imm_rates
 
@@ -565,8 +554,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=False):
                 path, length T + S
 
     """
-    assert curr_year >= 2011
-    # age_per = np.linspace(min_yr, max_yr, E+S)
+    assert curr_year >= 2021
     fert_rates = get_fert(E + S, min_yr, max_yr, graph=False)
     mort_rates, infmort_rate = get_mort(E + S, min_yr, max_yr, graph=False)
     mort_rates_S = mort_rates[-S:]
@@ -590,38 +578,26 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=False):
 
     # Generate time path of the nonstationary population distribution
     omega_path_lev = np.zeros((E + S, T + S))
-    pop_file = utils.read_file(
-        CUR_PATH, os.path.join("data", "demographic", "india_pop_data.csv")
-    )
-    pop_data = pd.read_csv(pop_file, encoding="utf-8")
-    pop_data_samp = pop_data[
-        (pop_data["Age"] >= min_yr - 1) & (pop_data["Age"] <= max_yr - 1)
-    ]
-    pop_2011 = np.array(pop_data_samp["2011"], dtype="f")
-    # Generate the current population distribution given that E+S might
-    # be less than max_yr-min_yr+1
+    pop_df = get_un_pop_data(download=False)
+    pop_2021 = pop_df["pop"][
+        ((pop_df["sex_num"]==3) & (pop_df["age"]<100))
+    ].to_numpy().flatten()
     age_per_EpS = np.arange(1, E + S + 1)
-    pop_2011_EpS = pop_rebin(pop_2011, E + S)
-    pop_2011_pct = pop_2011_EpS / pop_2011_EpS.sum()
+    pop_2021_EpS = pop_rebin(pop_2021, E + S)
+    pop_2021_pct = pop_2021_EpS / pop_2021_EpS.sum()
     # Age most recent population data to the current year of analysis
-    pop_curr = pop_2011_EpS.copy()
-    data_year = 2019
-    pop_next = np.dot(OMEGA_orig, pop_curr)
-    g_n_curr = (pop_next[-S:].sum() - pop_curr[-S:].sum()) / pop_curr[
-        -S:
-    ].sum()  # g_n in 2019
-    pop_past = pop_curr  # assume 2018-2019 pop
-    # Age the data to the current year
-    for per in range(curr_year - data_year):
-        pop_next = np.dot(OMEGA_orig, pop_curr)
-        g_n_curr = (pop_next[-S:].sum() - pop_curr[-S:].sum()) / pop_curr[
-            -S:
-        ].sum()
-        pop_past = pop_curr
-        pop_curr = pop_next
-
-    # Generate time path of the population distribution
-    omega_path_lev[:, 0] = pop_curr.copy()
+    pop_curr = pop_2021_EpS.copy()
+    data_year = 2021
+    if curr_year == data_year:
+        omega_path_lev[:, 0] = pop_curr
+    elif curr_year > data_year:
+        for per in range(curr_year - data_year):
+            pop_next = np.dot(OMEGA_orig, pop_curr)
+            g_n_curr = ((pop_next[-S:].sum() - pop_curr[-S:].sum()) /
+                        pop_curr[-S:].sum())
+            pop_past = pop_curr.copy()
+            pop_curr = pop_next.copy()
+        omega_path_lev[:, 0] = pop_curr
     for per in range(1, T + S):
         pop_next = np.dot(OMEGA_orig, pop_curr)
         omega_path_lev[:, per] = pop_next.copy()
@@ -807,7 +783,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=False):
         )
         pp.plot_population_path(
             age_per_EpS,
-            pop_2011_pct,
+            pop_2021_pct,
             omega_path_lev,
             omega_SSfx,
             curr_year,
