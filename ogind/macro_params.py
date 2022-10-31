@@ -27,7 +27,7 @@ def get_macro_params():
         "Labor share": "LABSHPINA156NRUG",
         "Debt to GDP ratio": "GGGDTAINA188N",
         #"BAA Corp Bond Rates": "DBAA",
-        "10 year govt bond rate": "INDIRLTLT01STM",
+        # "10 year govt bond rate": "INDIRLTLT01STM",
         #"Total gov transfer payments": "B087RC1Q027SBEA",
         #"Social Security payments": "W823RC1",
         "Gov expenditures": "INDGFCEQDSMEI",
