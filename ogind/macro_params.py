@@ -74,7 +74,7 @@ def get_macro_params():
     # find initial_debt_ratio
     macro_parameters["initial_debt_ratio"] = pd.Series(
         fred_data_a["Outstanding Domestic Public Debt to GDP"]
-    ).loc[baseline_date2]
+    ).loc[baseline_date2] / 100
 
     # # find alpha_T
     # macro_parameters["alpha_T"] = pd.Series(
@@ -96,10 +96,10 @@ def get_macro_params():
     # ).loc[baseline_date]
 
     # find gamma
-    macro_parameters["gamma"] = 1 - fred_data_a["Labor share"].mean()
+    macro_parameters["gamma"] = [1 - fred_data_a["Labor share"].mean()]
 
     # find g_y
-    macro_parameters["g_y"] = (
+    macro_parameters["g_y_annual"] = (
         fred_data_q["GDP Per Capita"].pct_change(periods=4, freq="Q").mean()
     )
 
