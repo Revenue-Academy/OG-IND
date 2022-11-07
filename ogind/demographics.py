@@ -448,6 +448,8 @@ def get_mort(totpers, min_yr, max_yr, graph=False):
         .to_numpy()
         .flatten()
     )
+    # Artificially set the mortality rate of the oldest age to 1.
+    mort_rates[-1] = 1.0
 
     if graph:
         ages_all = np.arange(0, 101)
