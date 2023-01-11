@@ -127,16 +127,6 @@ def get_un_fert_data(
         inplace=True,
     )
 
-    # # Clean the data
-    # # I don't know why in the pop_df population data by age and sex and year
-    # # there are 10 different population numbers for each sex and age and year
-    # # and all the other variables are equal. I just average them here.
-    # pop_df = (
-    #     pop_df.groupby(["year", "sex_num", "sex_str", "age"])
-    #     .mean()
-    #     .reset_index()
-    # )
-
     # Merge in the male and female population by age data
     fert_rates_df = fert_rates_df.merge(
         pop_df[["year", "age", "pop"]][pop_df["sex_num"] == 1],
@@ -184,7 +174,8 @@ def get_un_mort_data(
         path_folder (None or str): string path to folder where data are stored
 
     Returns:
-        fert_rates_df (DataFrame): dataset with fertility rates by age
+        infmort_rate_df (DataFrame): dataset with infant mortality rates by yr
+        mort_rates_df(DataFrame): dataset with mortality rates by age
     """
     if end_year is None:
         end_year = start_year
@@ -299,7 +290,7 @@ def get_un_pop_data(
         path_folder (None or str): string path to folder where data are stored
 
     Returns:
-        fert_rates_df (DataFrame): dataset with fertility rates by age
+        pop_df (DataFrame): dataset with total population by age
     """
     if end_year is None:
         end_year = start_year
