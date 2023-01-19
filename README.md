@@ -1,4 +1,6 @@
-[![Python 3.7+](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://www.python.org/downloads/release/python-377/)
+[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-3916/)
+[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3108/)
+![example event parameter](https://github.com/Revenue-Academy/OG-IND/actions/workflows/check_black.yml/badge.svg?branch=main)
 
 # OG-IND
 OG-IND is an overlapping-generations (OG) model that allows for dynamic general equilibrium analysis of fiscal policy for the India. OG-IND is built on the OG-Core framework. The model output includes changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Regularly updated documentation of the model theory--its output, and solution method--and the Python API is available at https://pslmodels.github.io/OG-Core and documentation of the specific Indian calibration of the model will be available soon.
