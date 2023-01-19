@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 import scipy.optimize as opt
 from ogcore import parameter_plots as pp
-rom pandas_datareader import wb
+from pandas_datareader import wb
 import matplotlib.pyplot as plt
 
 # create output director for figures
