@@ -5,8 +5,8 @@ Macro Parameter Estimation Functions
 
 **macro_params.py modules**
 
-ogusa.macro_params
+ogind.macro_params
 ------------------------------------------
 
-.. automodule:: ogusa.macro_params
+.. automodule:: ogind.macro_params
   :members: get_macro_params
