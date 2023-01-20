@@ -53,7 +53,7 @@ The organization of this repository will be changing rapidly, but the `OG-IND/ex
 
 ## Core Maintainers
 
-The core maintainers of the OG-Core repository are:
+The core maintainers of the OG-IND repository are:
 
 * Sebastian James (GitHub handle: [@sebastiansajie](https://github.com/sebastiansajie))
 * Rajiv Kumar (GitHub handle: [@rajivkumar1975](https://github.com/rajivkumar1975))
