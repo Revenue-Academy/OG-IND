@@ -7,6 +7,7 @@ BASELINE_DIR = "OUTPUT_BASELINE"
 
 # Default year for model runs
 DEFAULT_START_YEAR = 2022
+TC_LAST_YEAR = 2023  # last year for data in taxcalc package -- limit seen in the Growfactors.csv file
 
 
 VAR_LABELS = {
