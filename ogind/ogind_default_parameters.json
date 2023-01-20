@@ -1696,7 +1696,7 @@
     "constant_rates": false,
     "zero_taxes": false,
     "analytical_mtrs": false,
-    "age_specific": true,
+    "age_specific": false,
     "retirement_age": [65],
     "AIME_num_years": 35,
     "AIME_bkt_1": 749.0,
