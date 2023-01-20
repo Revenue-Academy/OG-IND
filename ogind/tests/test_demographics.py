@@ -12,9 +12,7 @@ def test_get_pop_objs():
     T = int(round(4.0 * S))
     start_year = 2021
 
-    pop_dict = demographics.get_pop_objs(
-        E, S, T, start_year, False
-    )
+    pop_dict = demographics.get_pop_objs(E, S, T, start_year, False)
 
     assert np.allclose(pop_dict["omega_SS"], pop_dict["omega"][-1, :])
 
@@ -28,9 +26,7 @@ def test_omega_sum1():
     T = int(round(4.0 * S))
     start_year = 2021
 
-    pop_dict = demographics.get_pop_objs(
-        E, S, T, start_year, False
-    )
+    pop_dict = demographics.get_pop_objs(E, S, T, start_year, False)
 
     assert np.allclose(pop_dict["omega_SS"].sum(), 1.0)
     assert np.allclose(pop_dict["omega"].sum(axis=1).max(), 1.0)
@@ -46,9 +42,7 @@ def test_pop_smooth():
     T = int(round(4.0 * S))
     start_year = 2021
 
-    pop_dict = demographics.get_pop_objs(
-        E, S, T, start_year, False
-    )
+    pop_dict = demographics.get_pop_objs(E, S, T, start_year, False)
 
     assert np.any(
         np.absolute(pop_dict["omega"][:-1, :] - pop_dict["omega"][1:, :])
@@ -68,9 +62,7 @@ def test_imm_smooth():
     T = int(round(4.0 * S))
     start_year = 2021
 
-    pop_dict = demographics.get_pop_objs(
-        E, S, T, start_year, False
-    )
+    pop_dict = demographics.get_pop_objs(E, S, T, start_year, False)
 
     assert np.any(
         np.absolute(
@@ -86,7 +78,7 @@ def test_get_fert():
     """
     S = 100
     fert_rates = demographics.get_fert(S, 0, 100, graph=False)
-    print('FERT RAtes = ', type(fert_rates), fert_rates)
+    print("FERT RAtes = ", type(fert_rates), fert_rates)
     assert fert_rates.shape[0] == S
 
 
@@ -115,7 +107,7 @@ def test_infant_mort():
     mort_rates, infmort_rate = demographics.get_mort(100, 0, 100, graph=False)
     # check that infant mortality equals rate hardcoded into
     # demographics.py
-    print('infmort_rate = ', infmort_rate)
+    print("infmort_rate = ", infmort_rate)
     assert np.allclose(infmort_rate, 0.0059427475)
 
 

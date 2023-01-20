@@ -56,9 +56,7 @@ class Calibration:
             p.E, p.S, p.T, p.start_year
         )
         # demographics for 80 period lives (needed for getting e below)
-        demog80 = demographics.get_pop_objs(
-            20, 80, p.T, p.start_year
-        )
+        demog80 = demographics.get_pop_objs(20, 80, p.T, p.start_year)
 
         # earnings profiles
         self.e = income.get_e_interp(
