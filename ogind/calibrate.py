@@ -1,5 +1,4 @@
-from ogind import demographics
-from ogind import macro_params
+from ogind import demographics, macro_params, get_micro_data
 import os
 import numpy as np
 from ogcore import txfunc
@@ -19,7 +18,7 @@ class Calibration:
         tax_func_path=None,
         iit_reform={},
         guid="",
-        data="cps",
+        data=None,
         client=None,
         num_workers=1,
     ):
