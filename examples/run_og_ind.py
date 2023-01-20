@@ -54,7 +54,18 @@ def main():
 
     # Update parameters from calibrate.py Calibration class
     c = Calibration(p)
-    updated_params = c.get_dict()
+    d = c.get_dict()
+    updated_params = {
+        "omega": d["omega"],
+        "g_n_ss": d["g_n_ss"],
+        "omega_SS": d["omega_SS"],
+        "surv_rate": d["surv_rate"],
+        "rho": d["rho"],
+        "g_n": d["g_n"],
+        "imm_rates": d["imm_rates"],
+        "omega_S_preTP": d["omega_S_preTP"],
+        "e": d["e"],
+    }
     p.update_specifications(updated_params)
 
     # Run model
