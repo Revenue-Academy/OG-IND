@@ -48,7 +48,10 @@ def main():
             )
         )
     )
-
+    p.BW = 2
+    c = Calibration(p, estimate_tax_functions=True, client=client)
+    # update tax function parameters in Specifications Object
+    d = c.get_dict()
     # Run model
     start_time = time.time()
     runner(p, time_path=True, client=client)
