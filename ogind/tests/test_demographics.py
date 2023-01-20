@@ -77,7 +77,7 @@ def test_get_fert():
     Test of function to get fertility rates from data
     """
     S = 100
-    fert_rates = demographics.get_fert(S, 0, 100, graph=False)
+    fert_rates = demographics.get_fert(S, graph=False)
     print("FERT RAtes = ", type(fert_rates), fert_rates)
     assert fert_rates.shape[0] == S
 
@@ -87,7 +87,7 @@ def test_get_mort():
     Test of function to get mortality rates from data
     """
     S = 100
-    mort_rates, infmort_rate = demographics.get_mort(S, 0, 100, graph=False)
+    mort_rates, infmort_rate = demographics.get_mort(S, graph=False)
     assert mort_rates.shape[0] == S
 
 
@@ -96,7 +96,7 @@ def test_get_mort_lt1():
     Test that mortality rates don't exceed 1
     """
     S = 100
-    mort_rates, infmort_rate = demographics.get_mort(S, 0, 100, graph=False)
+    mort_rates, infmort_rate = demographics.get_mort(S, graph=False)
     assert mort_rates.max() <= 1.0
 
 
@@ -104,11 +104,11 @@ def test_infant_mort():
     """
     Test of function to get mortality rates from data
     """
-    mort_rates, infmort_rate = demographics.get_mort(100, 0, 100, graph=False)
+    mort_rates, infmort_rate = demographics.get_mort(100, graph=False)
     # check that infant mortality equals rate hardcoded into
     # demographics.py
     print("infmort_rate = ", infmort_rate)
-    assert np.allclose(infmort_rate, 0.0059427475)
+    assert np.allclose(infmort_rate, 0.0203)
 
 
 def test_pop_rebin():
