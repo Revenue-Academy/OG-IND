@@ -1,5 +1,6 @@
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-3916/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3108/)
+![example event parameter](https://github.com/Revenue-Academy/OG-IND/actions/workflows/build_and_test.yml/badge.svg?branch=main)
 ![example event parameter](https://github.com/Revenue-Academy/OG-IND/actions/workflows/check_black.yml/badge.svg?branch=main)
 
 # OG-IND
