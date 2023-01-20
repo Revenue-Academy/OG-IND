@@ -12,6 +12,7 @@ from ogind.calibrate import Calibration
 from ogcore.parameters import Specifications
 from ogcore import output_tables as ot
 from ogcore import output_plots as op
+from ogcore import parameter_plots as pp
 from ogcore.execute import runner
 from ogcore.utils import safe_read_pickle
 
