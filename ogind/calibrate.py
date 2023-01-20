@@ -124,7 +124,6 @@ class Calibration:
                 client=client,
                 num_workers=num_workers,
             )
-            p.BW = len(micro_data)
             dict_params = txfunc.tax_func_estimate(  # pragma: no cover
                 micro_data,
                 p.BW,
