@@ -64,9 +64,11 @@ def test_set_path():
 
 
 pit_reform_1 = {
-    2020: {"_std_deduction": [50000]},
-    2020: {"_rebate_thd": [500000]},
-    2020: {"_rebate_ceiling": [12500]},
+    2020: {
+        "_std_deduction": [50000],
+        "_rebate_thd": [500000],
+        "_rebate_ceiling": [12500],
+    }
 }
 
 
@@ -94,9 +96,11 @@ def test_get_calculator(baseline, pit_reform):
 
 def test_get_calculator_exception():
     pit_reform = {
-        2020: {"_std_deduction": [50000]},
-        2020: {"_rebate_thd": [500000]},
-        2020: {"_rebate_ceiling": [12500]},
+        2020: {
+            "_std_deduction": [50000],
+            "_rebate_thd": [500000],
+            "_rebate_ceiling": [12500],
+        }
     }
     with pytest.raises(Exception):
         assert get_micro_data.get_calculator(

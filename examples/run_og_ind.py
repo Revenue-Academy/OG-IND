@@ -14,6 +14,9 @@ from ogcore import output_tables as ot
 from ogcore import output_plots as op
 from ogcore.execute import runner
 from ogcore.utils import safe_read_pickle
+import gc
+
+gc.disable()
 
 
 def main():
@@ -80,9 +83,11 @@ def main():
 
     # Create a PIT reform
     pit_reform = {
-        2020: {"_std_deduction": [50000]},
-        2020: {"_rebate_thd": [500000]},
-        2020: {"_rebate_ceiling": [12500]},
+        2020: {
+            "_std_deduction": [50000],
+            "_rebate_thd": [500000],
+            "_rebate_ceiling": [12500],
+        }
     }
     # create new calibration object for reform simulation
     c2 = Calibration(
