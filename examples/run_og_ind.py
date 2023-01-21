@@ -78,12 +78,11 @@ def main():
     p2.baseline = False
     p2.output_base = reform_dir
 
-
     # Create a PIT reform
     pit_reform = {
-    2020: {"_std_deduction": [50000]},
-    2020: {"_rebate_thd": [500000]},
-    2020: {"_rebate_ceiling": [12500]},
+        2020: {"_std_deduction": [50000]},
+        2020: {"_rebate_thd": [500000]},
+        2020: {"_rebate_ceiling": [12500]},
     }
     # create new calibration object for reform simulation
     c2 = Calibration(

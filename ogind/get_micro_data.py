@@ -82,8 +82,9 @@ def get_calculator(
     crec = CorpRecords()
 
     # the default set up increments year to 2013
-    calc1 = Calculator(records=records1, corprecords=crec,
-                       gstrecords=grec, policy=policy1)
+    calc1 = Calculator(
+        records=records1, corprecords=crec, gstrecords=grec, policy=policy1
+    )
 
     # Check that start_year is appropriate
     if calculator_start_year > TC_LAST_YEAR:
@@ -200,19 +201,16 @@ def taxcalc_advance(baseline, start_year, reform, data, year):
     tax_dict = {
         "mtr_labinc": calc1.mtr("SALARIES"),
         "mtr_capinc": mtr_combined_capinc,
-        "age": np.ones_like(calc1.array('pitax')) * 40, ## Age seems to be missing from calc1.array('AGE'), even though it appears to be in the data
-        "total_labinc": calc1.array('SALARIES'),
-        "total_capinc": (
-            market_income - calc1.array('SALARIES')
-        ),
+        "age": np.ones_like(calc1.array("pitax"))
+        * 40,  ## Age seems to be missing from calc1.array('AGE'), even though it appears to be in the data
+        "total_labinc": calc1.array("SALARIES"),
+        "total_capinc": (market_income - calc1.array("SALARIES")),
         "market_income": market_income,
-        "total_tax_liab": calc1.array('pitax'),
-        "payroll_tax_liab": np.zeros_like(calc1.array('pitax')),
-        "etr": (
-            calc1.array('pitax') / market_income
-        ),
+        "total_tax_liab": calc1.array("pitax"),
+        "payroll_tax_liab": np.zeros_like(calc1.array("pitax")),
+        "etr": (calc1.array("pitax") / market_income),
         "year": calc1.current_year * np.ones(length),
-        "weight": 1  # calc1.array('weight') - the India PIT data has no weight variable,
+        "weight": 1,  # calc1.array('weight') - the India PIT data has no weight variable,
     }
 
     # garbage collection
@@ -236,8 +234,11 @@ def cap_inc_mtr(calc1):  # pragma: no cover
 
     """
     capital_income_sources = (
-        'ST_CG_AMT_1', 'ST_CG_AMT_2', 'ST_CG_AMT_APPRATE',
-        'LT_CG_AMT_1', 'LT_CG_AMT_2'
+        "ST_CG_AMT_1",
+        "ST_CG_AMT_2",
+        "ST_CG_AMT_APPRATE",
+        "LT_CG_AMT_1",
+        "LT_CG_AMT_2",
     )
 
     # calculating MTRs separately - can skip items with zero tax
@@ -258,9 +259,7 @@ def cap_inc_mtr(calc1):  # pragma: no cover
     ]
     mtr_combined_capinc = np.zeros_like(total_cap_inc)
     mtr_combined_capinc[total_cap_inc != 0] = (
-        sum(capital_mtr)[
-            total_cap_inc != 0
-        ]
+        sum(capital_mtr)[total_cap_inc != 0]
         / total_cap_inc[total_cap_inc != 0]
     )
     # Case with no capital income, assign MTR as that on labor income

@@ -226,7 +226,6 @@ class Calibration:
 
         return tax_param_dict
 
-
     def read_tax_func_estimate(self, p, tax_func_path):
         """
         This function reads in tax function parameters from pickle
