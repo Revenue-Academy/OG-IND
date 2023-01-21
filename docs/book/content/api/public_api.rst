@@ -1,10 +1,10 @@
 API
 =========================
-The source code for `OG-USA` is located in the `/OG-USA/ogusa/` directory tree.
+The source code for `OG-IND` is located in the `/OG-IND/ogind/` directory tree.
 
-Here we provide a high-level view of the API of the `OG-USA` package, with links
+Here we provide a high-level view of the API of the `OG-IND` package, with links
 to the source code. This high-level view is organized around the modules that
-make up the `OG-USA` package. Below is a list of these modules (in alphabetical
+make up the `OG-IND` package. Below is a list of these modules (in alphabetical
 order) with documentation about how to call each class method and function.
 There is also a link to the source code for each documented member.
 

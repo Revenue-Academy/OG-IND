@@ -16,7 +16,7 @@ class Calibration:
         estimate_beta=False,
         estimate_chi_n=False,
         tax_func_path=None,
-        iit_reform={},
+        pit_reform={},
         guid="",
         data=None,
         client=None,
@@ -29,7 +29,7 @@ class Calibration:
         if estimate_tax_functions:
             self.tax_function_params = self.get_tax_function_parameters(
                 p,
-                iit_reform,
+                pit_reform,
                 guid,
                 data,
                 client,
@@ -52,11 +52,11 @@ class Calibration:
         # self.zeta = bequest_transmission.get_bequest_matrix()
 
         # demographics
-        # self.demographic_params = demographics.get_pop_objs(
-        #     p.E, p.S, p.T, 1, 100, p.start_year
-        # )
+        self.demographic_params = demographics.get_pop_objs(
+            p.E, p.S, p.T, p.start_year
+        )
         # demographics for 80 period lives (needed for getting e below)
-        # demog80 = demographics.get_pop_objs(20, 80, p.T, 1, 100, p.start_year)
+        # demog80 = demographics.get_pop_objs(20, 80, p.T, p.start_year)
 
         # earnings profiles
         # self.e = income.get_e_interp(
@@ -71,7 +71,7 @@ class Calibration:
     def get_tax_function_parameters(
         self,
         p,
-        iit_reform={},
+        pit_reform={},
         guid="",
         data="",
         client=None,
@@ -116,7 +116,7 @@ class Calibration:
             micro_data, taxcalc_version = get_micro_data.get_data(
                 baseline=p.baseline,
                 start_year=p.start_year,
-                reform=iit_reform,
+                reform=pit_reform,
                 data=data,
                 path=p.output_base,
                 client=client,
@@ -134,7 +134,7 @@ class Calibration:
                 analytical_mtrs=p.analytical_mtrs,
                 tax_func_type=p.tax_func_type,
                 age_specific=p.age_specific,
-                reform=iit_reform,
+                reform=pit_reform,
                 data=data,
                 client=client,
                 num_workers=num_workers,
@@ -311,6 +311,6 @@ class Calibration:
         # dict["zeta"] = self.zeta
         dict.update(self.macro_params)
         # dict["e"] = self.e
-        # dict.update(self.demographic_params)
+        dict.update(self.demographic_params)
 
         return dict
