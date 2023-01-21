@@ -3,7 +3,6 @@ import os
 import numpy as np
 from ogcore import txfunc
 from ogcore.utils import safe_read_pickle, mkdirs
-import pkg_resources
 
 
 class Calibration:
@@ -53,10 +52,19 @@ class Calibration:
 
         # demographics
         self.demographic_params = demographics.get_pop_objs(
-            p.E, p.S, p.T, p.start_year
+            p.E,
+            p.S,
+            p.T,
+            1,
+            100,
+            p.start_year - 1,
+            p.start_year,
+            GraphDiag=True,
         )
         # demographics for 80 period lives (needed for getting e below)
-        demog80 = demographics.get_pop_objs(20, 80, p.T, p.start_year)
+        demog80 = demographics.get_pop_objs(
+            20, 80, p.T, 1, 100, p.start_year - 1, p.start_year
+        )
 
         # earnings profiles
         self.e = income.get_e_interp(
