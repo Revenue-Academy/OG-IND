@@ -14,9 +14,6 @@ from ogcore import output_tables as ot
 from ogcore import output_plots as op
 from ogcore.execute import runner
 from ogcore.utils import safe_read_pickle
-import gc
-
-gc.disable()
 
 
 def main():
