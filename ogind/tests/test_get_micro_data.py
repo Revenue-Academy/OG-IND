@@ -63,7 +63,7 @@ def test_set_path():
 #         )
 
 
-iit_reform_1 = {
+pit_reform_1 = {
     2020: {"_std_deduction": [50000]},
     2020: {"_rebate_thd": [500000]},
     2020: {"_rebate_ceiling": [12500]},
@@ -71,8 +71,8 @@ iit_reform_1 = {
 
 
 @pytest.mark.parametrize(
-    "baseline,iit_reform",
-    [(False, iit_reform_1), (False, {}), (True, iit_reform_1), (True, {})],
+    "baseline,pit_reform",
+    [(False, pit_reform_1), (False, {}), (True, pit_reform_1), (True, {})],
     ids=[
         "Reform, Policy change given",
         "Reform, No policy change given",
@@ -80,11 +80,11 @@ iit_reform_1 = {
         "Baseline, No policy change given",
     ],
 )
-def test_get_calculator(baseline, iit_reform):
+def test_get_calculator(baseline, pit_reform):
     calc = get_micro_data.get_calculator(
         baseline=baseline,
         calculator_start_year=2017,
-        reform=iit_reform,
+        reform=pit_reform,
         data=None,
         gfactors=None,
         records_start_year=2017,
@@ -93,7 +93,7 @@ def test_get_calculator(baseline, iit_reform):
 
 
 def test_get_calculator_exception():
-    iit_reform = {
+    pit_reform = {
     2020: {"_std_deduction": [50000]},
     2020: {"_rebate_thd": [500000]},
     2020: {"_rebate_ceiling": [12500]},
@@ -102,7 +102,7 @@ def test_get_calculator_exception():
         assert get_micro_data.get_calculator(
             baseline=False,
             calculator_start_year=TC_LAST_YEAR + 1,
-            reform=iit_reform,
+            reform=pit_reform,
             data=None,
             gfactors=GrowFactors(),
             records_start_year=2021,
