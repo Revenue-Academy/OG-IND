@@ -1,9 +1,10 @@
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-3916/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3108/)
+![example event parameter](https://github.com/Revenue-Academy/OG-IND/actions/workflows/build_and_test.yml/badge.svg?branch=main)
 ![example event parameter](https://github.com/Revenue-Academy/OG-IND/actions/workflows/check_black.yml/badge.svg?branch=main)
 
 # OG-IND
-OG-IND is an overlapping-generations (OG) model that allows for dynamic general equilibrium analysis of fiscal policy for the India. OG-IND is built on the OG-Core framework. The model output includes changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Regularly updated documentation of the model theory--its output, and solution method--and the Python API is available at https://pslmodels.github.io/OG-Core and documentation of the specific Indian calibration of the model will be available soon.
+OG-IND is an overlapping-generations (OG) model that allows for dynamic general equilibrium analysis of fiscal policy for India. OG-IND is built on the OG-Core framework. The model output includes changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Regularly updated documentation of the model theory--its output, and solution method--and the Python API is available at https://pslmodels.github.io/OG-Core and documentation of the specific Indian calibration of the model will be available soon.
 
 
 ## Using and contributing to OG-IND
@@ -12,7 +13,7 @@ OG-IND is an overlapping-generations (OG) model that allows for dynamic general 
 * Clone this repository to a directory on your computer
 * From the terminal (or Conda command prompt), navigate to the directory to which you cloned this repository and run `conda env create -f environment.yml`. The process of creating the `ogind-dev` conda environment should not take more than five minutes.
 * Then, `conda activate ogind-dev`
-* Then install by `pip install -e .`
+* Then add the `ogind` package into this conda environment by typing `pip install -e .`
 * Navigate to `./examples`
 * Run the model with an example reform from terminal/command prompt by typing `python run_og_ind.py`
 * You can adjust the `./examples/run_og_ind.py` by modifying model parameters specified in the dictionary passed to the `p.update_specifications()` calls.
@@ -32,7 +33,7 @@ OG-IND is an overlapping-generations (OG) model that allows for dynamic general 
     * See [`ogcore.TPI.py`](https://github.com/PSLmodels/OG-Core/blob/master/ogcore/TPI.py) for what is in the dictionary object in this pickle file
   * An analogous set of files in the `./examples/OUTPUT_REFORM` directory, which represent objects from the simulation of the reform policy
 
-Note that, depending on your machine, a full model run (solving for the full time path equilibrium for the baseline and reform policies) can take more than two hours of compute time.
+Note that, depending on your machine, a full model run (solving for the full time path equilibrium for the baseline and reform policies) can take more than an hour of compute time.
 
 If you run into errors running the example script, please open a new issue in the OG-IND repo with a description of the issue and any relevant tracebacks you receive.
 
@@ -52,7 +53,7 @@ The organization of this repository will be changing rapidly, but the `OG-IND/ex
 
 ## Core Maintainers
 
-The core maintainers of the OG-Core repository are:
+The core maintainers of the OG-IND repository are:
 
 * Sebastian James (GitHub handle: [@sebastiansajie](https://github.com/sebastiansajie))
 * Rajiv Kumar (GitHub handle: [@rajivkumar1975](https://github.com/rajivkumar1975))
