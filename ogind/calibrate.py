@@ -1,10 +1,8 @@
-from ogind import demographics
-from ogind import macro_params
+from ogind import demographics, macro_params, income
 import os
 import numpy as np
 from ogcore import txfunc
 from ogcore.utils import safe_read_pickle, mkdirs
-import pkg_resources
 
 
 class Calibration:
@@ -54,19 +52,28 @@ class Calibration:
 
         # demographics
         self.demographic_params = demographics.get_pop_objs(
-            p.E, p.S, p.T, p.start_year
+            p.E,
+            p.S,
+            p.T,
+            1,
+            100,
+            p.start_year - 1,
+            p.start_year,
+            GraphDiag=True,
         )
         # demographics for 80 period lives (needed for getting e below)
-        # demog80 = demographics.get_pop_objs(20, 80, p.T, p.start_year)
+        demog80 = demographics.get_pop_objs(
+            20, 80, p.T, 1, 100, p.start_year - 1, p.start_year
+        )
 
         # earnings profiles
-        # self.e = income.get_e_interp(
-        #     p.S,
-        #     self.demographic_params["omega_SS"],
-        #     demog80["omega_SS"],
-        #     p.lambdas,
-        #     plot=False,
-        # )
+        self.e = income.get_e_interp(
+            p.S,
+            self.demographic_params["omega_SS"],
+            demog80["omega_SS"],
+            p.lambdas,
+            plot=False,
+        )
 
     # Tax Functions
     def get_tax_function_parameters(
@@ -371,7 +378,7 @@ class Calibration:
         # dict["eta"] = self.eta
         # dict["zeta"] = self.zeta
         dict.update(self.macro_params)
-        # dict["e"] = self.e
+        dict["e"] = self.e
         dict.update(self.demographic_params)
 
         return dict
