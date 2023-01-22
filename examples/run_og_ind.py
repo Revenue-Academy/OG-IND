@@ -18,7 +18,7 @@ from ogcore.utils import safe_read_pickle
 
 def main():
     # Define parameters to use for multiprocessing
-    client = Client()
+    client = None #Client()
     num_workers = min(multiprocessing.cpu_count(), 7)
     print("Number of workers = ", num_workers)
 
@@ -94,7 +94,7 @@ def main():
     d = c2.get_dict()
     # additional parameters to change
     updated_params_ref = {
-        "cit_rate": [0.35],
+        "cit_rate": [[0.35]],
         "etr_params": d["etr_params"],
         "mtrx_params": d["mtrx_params"],
         "mtry_params": d["mtry_params"],
