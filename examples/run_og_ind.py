@@ -12,13 +12,14 @@ from ogind.calibrate import Calibration
 from ogcore.parameters import Specifications
 from ogcore import output_tables as ot
 from ogcore import output_plots as op
+from ogcore import parameter_plots as pp
 from ogcore.execute import runner
 from ogcore.utils import safe_read_pickle
 
 
 def main():
     # Define parameters to use for multiprocessing
-    client = None  # Client()
+    client = None
     num_workers = min(multiprocessing.cpu_count(), 7)
     print("Number of workers = ", num_workers)
 
@@ -50,11 +51,23 @@ def main():
             )
         )
     )
+
+    # Update parameters from calibrate.py Calibration class
     p.BW = 2
+    p.tax_func_type = "GS"
     c = Calibration(p, estimate_tax_functions=True, client=client)
-    # update tax function parameters in Specifications Object
+    client = Client()
     d = c.get_dict()
     updated_params = {
+        "omega": d["omega"],
+        "g_n_ss": d["g_n_ss"],
+        "omega_SS": d["omega_SS"],
+        "surv_rate": d["surv_rate"],
+        "rho": d["rho"],
+        "g_n": d["g_n"],
+        "imm_rates": d["imm_rates"],
+        "omega_S_preTP": d["omega_S_preTP"],
+        "e": d["e"],
         "etr_params": d["etr_params"],
         "mtrx_params": d["mtrx_params"],
         "mtry_params": d["mtry_params"],

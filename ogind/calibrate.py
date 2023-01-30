@@ -1,9 +1,8 @@
-from ogind import demographics, macro_params, get_micro_data
+from ogind import demographics, macro_params, get_micro_data, income
 import os
 import numpy as np
 from ogcore import txfunc
 from ogcore.utils import safe_read_pickle, mkdirs
-import pkg_resources
 
 
 class Calibration:
@@ -53,19 +52,28 @@ class Calibration:
 
         # demographics
         self.demographic_params = demographics.get_pop_objs(
-            p.E, p.S, p.T, p.start_year
+            p.E,
+            p.S,
+            p.T,
+            1,
+            100,
+            p.start_year - 1,
+            p.start_year,
+            GraphDiag=True,
         )
         # demographics for 80 period lives (needed for getting e below)
-        # demog80 = demographics.get_pop_objs(20, 80, p.T, p.start_year)
+        demog80 = demographics.get_pop_objs(
+            20, 80, p.T, 1, 100, p.start_year - 1, p.start_year
+        )
 
         # earnings profiles
-        # self.e = income.get_e_interp(
-        #     p.S,
-        #     self.demographic_params["omega_SS"],
-        #     demog80["omega_SS"],
-        #     p.lambdas,
-        #     plot=False,
-        # )
+        self.e = income.get_e_interp(
+            p.S,
+            self.demographic_params["omega_SS"],
+            demog80["omega_SS"],
+            p.lambdas,
+            plot=False,
+        )
 
     # Tax Functions
     def get_tax_function_parameters(
@@ -111,7 +119,8 @@ class Calibration:
         # If run_micro is false, check to see if parameters file exists
         # and if it is consistent with Specifications instance
         if not run_micro:
-            dict_params, run_micro = self.read_tax_func_estimate(tax_func_path)
+            dict_params, run_micro = self.read_tax_func_estimate(p, tax_func_path)
+            taxcalc_version = "Cached tax parameters, no taxcalc version"
         if run_micro:
             micro_data, taxcalc_version = get_micro_data.get_data(
                 baseline=p.baseline,
@@ -309,7 +318,7 @@ class Calibration:
         # dict["eta"] = self.eta
         # dict["zeta"] = self.zeta
         dict.update(self.macro_params)
-        # dict["e"] = self.e
+        dict["e"] = self.e
         dict.update(self.demographic_params)
 
         return dict
