@@ -26,6 +26,10 @@ class Calibration:
         self.estimate_beta = estimate_beta
         self.estimate_chi_n = estimate_chi_n
         if estimate_tax_functions:
+            if tax_func_path is not None:
+                run_micro = False
+            else:
+                run_micro = True
             self.tax_function_params = self.get_tax_function_parameters(
                 p,
                 pit_reform,
@@ -33,7 +37,7 @@ class Calibration:
                 data,
                 client,
                 num_workers,
-                run_micro=True,
+                run_micro=run_micro,
                 tax_func_path=tax_func_path,
             )
         # if estimate_beta:
@@ -119,7 +123,9 @@ class Calibration:
         # If run_micro is false, check to see if parameters file exists
         # and if it is consistent with Specifications instance
         if not run_micro:
-            dict_params, run_micro = self.read_tax_func_estimate(p, tax_func_path)
+            dict_params, run_micro = self.read_tax_func_estimate(
+                p, tax_func_path
+            )
             taxcalc_version = "Cached tax parameters, no taxcalc version"
         if run_micro:
             micro_data, taxcalc_version = get_micro_data.get_data(
@@ -265,6 +271,7 @@ class Calibration:
             except KeyError:
                 pass
             try:
+                p.BW = dict_params["BW"]  # QUICK FIX
                 if p.BW != dict_params["BW"]:
                     print(
                         "Model budget window length is "
