@@ -19,7 +19,7 @@ from ogcore.utils import safe_read_pickle
 
 def main():
     # Define parameters to use for multiprocessing
-    client = Client()
+    client = None
     num_workers = min(multiprocessing.cpu_count(), 7)
     print("Number of workers = ", num_workers)
 
@@ -53,7 +53,10 @@ def main():
     )
 
     # Update parameters from calibrate.py Calibration class
-    c = Calibration(p)
+    p.BW = 2
+    p.tax_func_type = "GS"
+    c = Calibration(p, estimate_tax_functions=True, client=client)
+    client = Client()
     d = c.get_dict()
     updated_params = {
         "omega": d["omega"],
@@ -65,9 +68,13 @@ def main():
         "imm_rates": d["imm_rates"],
         "omega_S_preTP": d["omega_S_preTP"],
         "e": d["e"],
+        "etr_params": d["etr_params"],
+        "mtrx_params": d["mtrx_params"],
+        "mtry_params": d["mtry_params"],
+        "mean_income_data": d["mean_income_data"],
+        "frac_tax_payroll": d["frac_tax_payroll"],
     }
     p.update_specifications(updated_params)
-
     # Run model
     start_time = time.time()
     runner(p, time_path=True, client=client)
@@ -84,9 +91,28 @@ def main():
     p2.baseline = False
     p2.output_base = reform_dir
 
+    # Create a PIT reform
+    pit_reform = {
+        2020: {
+            "_std_deduction": [50000],
+            "_rebate_thd": [500000],
+            "_rebate_ceiling": [12500],
+        }
+    }
+    # create new calibration object for reform simulation
+    c2 = Calibration(
+        p2, pit_reform=pit_reform, estimate_tax_functions=True, client=client
+    )
+    # update tax function parameters in Specifications Object
+    d = c2.get_dict()
     # additional parameters to change
     updated_params_ref = {
         "cit_rate": [[0.35]],
+        "etr_params": d["etr_params"],
+        "mtrx_params": d["mtrx_params"],
+        "mtry_params": d["mtry_params"],
+        "mean_income_data": d["mean_income_data"],
+        "frac_tax_payroll": d["frac_tax_payroll"],
     }
     p2.update_specifications(updated_params_ref)
 
