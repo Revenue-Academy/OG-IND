@@ -193,7 +193,9 @@ def get_e_interp(S, age_wgts, age_wgts_80, abil_wgts, plot=False):
 
     """
     # Get original 80 x 7 ability matrix
-    abil_wgts_orig = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
+    abil_wgts_orig = np.array(
+        [0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.004, 0.0009, 0.0001]
+    )
     emat_orig = get_e_orig(age_wgts_80, abil_wgts_orig, plot)
 
     # Now adjust for IND by changing the e matrix to match the gini in
