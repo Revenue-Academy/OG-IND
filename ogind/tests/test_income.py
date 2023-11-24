@@ -840,7 +840,9 @@ def test_get_e_orig_exception1():
     Test that RuntimeError is raised if age_wgts does not have length 80
     """
     age_wgts = np.ones(70) * 1 / 80
-    abil_wgts = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.014])
+    abil_wgts = np.array(
+        [0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.003, 0.001, 0.001]
+    )
     with pytest.raises(RuntimeError):
         income.get_e_orig(age_wgts, abil_wgts)
 
@@ -2373,6 +2375,8 @@ def test_get_e_interp_exception():
     Test that RuntimeError is abil_wgts not suitable for interpolation
     """
     age_wgts = np.ones(80) * 1 / 80
-    abil_wgts = np.array([0.1, 0.35, 0.2, 0.1, 0.1, 0.09, 0.01])
+    abil_wgts = np.array(
+        [0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.003, 0.001, 0.001]
+    )
     with pytest.raises(RuntimeError):
         income.get_e_interp(80, age_wgts, age_wgts, abil_wgts)
