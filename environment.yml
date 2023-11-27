@@ -4,7 +4,7 @@ channels:
 dependencies:
 - python>=3.7.7, <3.12
 - ipython
-- setuptools
+- setuptools==65
 - psutil
 - numpy
 - scipy>=1.7.1
