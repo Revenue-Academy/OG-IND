@@ -4,7 +4,7 @@ channels:
 dependencies:
 - python>=3.7.7, <3.12
 - ipython
-- setuptools==65
+- setuptools
 - psutil
 - numpy
 - scipy>=1.7.1
@@ -34,4 +34,4 @@ dependencies:
   - jupyter-book>=0.9.1
   - pandas-datareader
   - ogcore
-  - git+https://github.com/jdebacker/India-PIT@og  # India-PIT model -- this branch for now until merged into master
+  - git+https://github.com/jdebacker/India-PIT@v.og.1  # India-PIT model -- this branch for now until merged into master
