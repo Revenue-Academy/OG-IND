@@ -12,6 +12,9 @@ import scipy.optimize as opt
 import pandas as pd
 import matplotlib.pyplot as plt
 from ogcore import parameter_plots as pp
+from ogind.utils import get_legacy_session
+from io import StringIO
+
 
 UN_COUNTRY_CODE = "356"  # UN code for IND
 # create output director for figures
@@ -57,9 +60,15 @@ def get_un_data(
     )
 
     # get data from url
-    response = requests.get(target)
-    # Converts call into JSON
-    j = response.json()
+    response = get_legacy_session().get(target)
+    # Check if the request was successful before processing
+    if response.status_code == 200:
+        # Converts call into JSON
+        j = response.json()
+    else:
+        print(
+            f"Failed to retrieve population data. HTTP status code: {response.status_code}"
+        )
     # Convert JSON into a pandas DataFrame.
     # pd.json_normalize flattens the JSON to accommodate nested lists
     # within the JSON structure
