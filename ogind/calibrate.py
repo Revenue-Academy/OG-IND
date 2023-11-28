@@ -64,17 +64,11 @@ class Calibration:
             p.start_year,
             GraphDiag=True,
         )
-        # demographics for 80 period lives (needed for getting e below)
-        demog80 = demographics.get_pop_objs(
-            20, 80, p.T, 1, 100, p.start_year - 1, p.start_year
-        )
 
         # earnings profiles
         self.e = income.get_e_interp(
-            p.S,
+            p.E, p.S, p.J, p.lambdas,
             self.demographic_params["omega_SS"],
-            demog80["omega_SS"],
-            p.lambdas,
             plot=False,
         )
 
