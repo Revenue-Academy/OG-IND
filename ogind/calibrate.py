@@ -67,7 +67,10 @@ class Calibration:
 
         # earnings profiles
         self.e = income.get_e_interp(
-            p.E, p.S, p.J, p.lambdas,
+            p.E,
+            p.S,
+            p.J,
+            p.lambdas,
             self.demographic_params["omega_SS"],
             plot=False,
         )

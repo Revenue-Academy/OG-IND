@@ -88,6 +88,7 @@ def get_e_interp(E, S, J, lambdas, age_wgts, plot=False):
             gini_ind_model / gini_usa_model
         )
         return error
+
     # Now find the e matrix for IND by changing the e matrix to match the gini in
     # IND (=35.7 in WB data: https://data.worldbank.org/indicator/SI.POV.GINI))
     # Note, USA gini in these data is 41.5
@@ -95,7 +96,11 @@ def get_e_interp(E, S, J, lambdas, age_wgts, plot=False):
     gini_usa_data = 41.5
     # Find the model implied Gini for the USA
     gini_usa_model = utils.Inequality(
-        usa_params.e, usa_params.omega_SS, usa_params.lambdas, usa_params.S, usa_params.J
+        usa_params.e,
+        usa_params.omega_SS,
+        usa_params.lambdas,
+        usa_params.S,
+        usa_params.J,
     ).gini()
 
     x = opt.root_scalar(
@@ -116,7 +121,11 @@ def get_e_interp(E, S, J, lambdas, age_wgts, plot=False):
     e_new = usa_params.e * np.exp(a * usa_params.e)
     emat_new_scaled = (
         e_new
-        / (e_new * usa_params.omega_SS.reshape(usa_params.S, 1) * usa_params.lambdas.reshape(1, usa_params.J)).sum()
+        / (
+            e_new
+            * usa_params.omega_SS.reshape(usa_params.S, 1)
+            * usa_params.lambdas.reshape(1, usa_params.J)
+        ).sum()
     )
     # Now interpolate for the cases where S and/or J not the same in the
     # India parameterization as in the default USA parameterization
@@ -146,14 +155,21 @@ def get_e_interp(E, S, J, lambdas, age_wgts, plot=False):
 
         # Make sure that values in abil_midp are within interpolating
         # bounds
-        if abil_midp.min() < usa_params.lambdas[0] or abil_midp.max() > usa_params.lambdas[-1]:
+        if (
+            abil_midp.min() < usa_params.lambdas[0]
+            or abil_midp.max() > usa_params.lambdas[-1]
+        ):
             err = (
                 "One or more entries in abilities vector (lambdas) is outside the "
                 + "allowable bounds for interpolation."
             )
             raise RuntimeError(err)
         usa_step = 80 / usa_params.S
-        emat_s_midp = np.linspace(usa_params.E + 0.5 * usa_step, usa_params.E + usa_params.S - 0.5 * usa_step, usa_params.S)
+        emat_s_midp = np.linspace(
+            usa_params.E + 0.5 * usa_step,
+            usa_params.E + usa_params.S - 0.5 * usa_step,
+            usa_params.S,
+        )
         emat_j_mesh, emat_s_mesh = np.meshgrid(emat_j_midp, emat_s_midp)
         newstep = 80 / S
         new_s_midp = np.linspace(E + 0.5 * newstep, E + S - 0.5 * newstep, S)
@@ -172,9 +188,7 @@ def get_e_interp(E, S, J, lambdas, age_wgts, plot=False):
         )
         emat_new_scaled = (
             emat_new
-            / (
-                emat_new * age_wgts.reshape(S, 1) * lambdas.reshape(1, J)
-            ).sum()
+            / (emat_new * age_wgts.reshape(S, 1) * lambdas.reshape(1, J)).sum()
         )
 
         if plot:

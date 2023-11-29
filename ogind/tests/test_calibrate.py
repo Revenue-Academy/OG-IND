@@ -16,11 +16,7 @@ def test_calibrate():
     p = ogcore.Specifications()
     p.update_specifications(
         json.load(
-            open(
-                os.path.join(
-                    CUR_PATH, "..", "ogind_default_parameters.json"
-                )
-            )
+            open(os.path.join(CUR_PATH, "..", "ogind_default_parameters.json"))
         )
     )
     _ = Calibration(p)
@@ -40,11 +36,7 @@ def test_read_tax_func_estimate():
     p = ogcore.Specifications()
     p.update_specifications(
         json.load(
-            open(
-                os.path.join(
-                    CUR_PATH, "..", "ogind_default_parameters.json"
-                )
-            )
+            open(os.path.join(CUR_PATH, "..", "ogind_default_parameters.json"))
         )
     )
     p.BW = 11
@@ -62,11 +54,7 @@ def test_get_dict():
     p = ogcore.Specifications()
     p.update_specifications(
         json.load(
-            open(
-                os.path.join(
-                    CUR_PATH, "..", "ogind_default_parameters.json"
-                )
-            )
+            open(os.path.join(CUR_PATH, "..", "ogind_default_parameters.json"))
         )
     )
     c = Calibration(p)
