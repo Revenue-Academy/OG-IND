@@ -78,9 +78,15 @@ def get_un_data(
         # Reset the target to the next page
         target = j["nextPage"]
         # call the API for the next page
-        response = requests.get(target)
+        response = get_legacy_session().get(target)
         # Convert response to JSON format
-        j = response.json()
+        if response.status_code == 200:
+            # Converts call into JSON
+            j = response.json()
+        else:
+            print(
+                f"Failed to retrieve population data. HTTP status code: {response.status_code}"
+            )
         # Store the next page in a data frame
         df_temp = pd.json_normalize(j["data"])
         # Append next page to the data frame
