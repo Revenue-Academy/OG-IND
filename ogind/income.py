@@ -73,7 +73,7 @@ def get_e_interp(E, S, J, lambdas, age_wgts, gini_to_match=35.7, plot=False):
         gini_usa_data,
         gini_usa_model,
     ):
-        gini_ind_model = utils.Inequality(
+        gini_target_model = utils.Inequality(
             emat_orig * np.exp(a * emat_orig),
             age_wgts,
             abil_wgts,
@@ -81,7 +81,7 @@ def get_e_interp(E, S, J, lambdas, age_wgts, gini_to_match=35.7, plot=False):
             len(abil_wgts),
         ).gini()
         error = (gini_to_match / gini_usa_data) - (
-            gini_ind_model / gini_usa_model
+            gini_target_model / gini_usa_model
         )
         return error
 
@@ -122,7 +122,7 @@ def get_e_interp(E, S, J, lambdas, age_wgts, gini_to_match=35.7, plot=False):
         ).sum()
     )
     # Now interpolate for the cases where S and/or J not the same in the
-    # India parameterization as in the default USA parameterization
+    # country parameterization as in the default USA parameterization
     if (
         S == usa_params.S
         and np.array_equal(
