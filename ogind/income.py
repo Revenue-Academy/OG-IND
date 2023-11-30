@@ -1,10 +1,3 @@
-"""
------------------------------------------------------------------
-Functions for created the matrix of ability levels, e.  This can
-only be used for looking at the 25, 50, 70, 80, 90, 99, and 100th
-percentiles, as it uses fitted polynomials to those percentiles.
------------------------------------------------------------------
-"""
 import numpy as np
 import scipy.optimize as opt
 import scipy.interpolate as si
@@ -19,30 +12,32 @@ CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 OUTPUT_DIR = os.path.join(CUR_PATH, "OUTPUT", "ability")
 
 
-def get_e_interp(E, S, J, lambdas, age_wgts, plot=False):
+def get_e_interp(E, S, J, lambdas, age_wgts, gini_to_match=35.7, plot=False):
     """
-    This function takes a source matrix of lifetime earnings profiles
-    (abilities, emat) of size (80, 7), where 80 is the number of ages
-    and 7 is the number of ability types in the source matrix, and
-    interpolates new values of a new S x J sized matrix of abilities
-    using linear interpolation. [NOTE: For this application, cubic
-    spline interpolation introduces too much curvature.]
-
-    This function also includes the two cases in which J = 9 and J = 10
-    that include higher lifetime earning percentiles calibrated using
-    Piketty and Saez (2003).
-
+    This function takes the calibrated lifetime earnings profiles
+    (abilities, e matrix) from OG-USA and then adjusts the shape of those
+    profiles to match the Gini coefficient for another economy. The
+    Gini coefficient to match is given in the argument gini_to_match.
+    Note that the calibrated OG-USA e matrix is of size (80, 10), where
+    80 is the number of ages and 10 is the number of ability types.
+    Users of this function specify their own number of age groups (S)
+    and ability types (J). The function will map the fitted functions
+    into these dimensions so long as the percentiles of the ability types
+    given in lambdas is not more refined at the top end than those in
+    OG-USA (which identifies up to the top 0.1%).
 
     Args:
+        E (int): the age agents become economically active
         S (int): number of ages to interpolate. This method assumes that
-            ages are evenly spaced between the beginning of the 21st
-            year and the end of the 100th year, >= 3
-        age_wgts (Numpy array): distribution of population in each age
-            for the interpolated ages, length S
-        age_wgts_80 (Numpy array): percent of population in each
-            one-year age from 21 to 100, length 80
-        abil_wgts (Numpy array): distribution of population in each
+            ages are evenly spaced between the beginning of age E
+            up to E+S, >= 3
+        J (int): number of ability types to interpolate
+        lambdas (Numpy array): distribution of population in each
             ability group, length J
+        age_wgts (Numpy array): distribution of population in each age
+            group, length S
+        gini_to_match (float): Gini coefficient to match, default is
+            35.7, the Gini coefficient for India in 2019
         plot (bool): if True, creates plots of emat_orig and the new
             interpolated emat_new
 
@@ -64,16 +59,17 @@ def get_e_interp(E, S, J, lambdas, age_wgts, plot=False):
     )
 
     # Define a function that will find the "a" in the equation:
-    # e_IND = e_USA * exp(a * e_USA)
-    # such that the e_IND produces a gini coefficient in the model that
+    # e_Y = e_USA * exp(a * e_USA)
+    # such that the e_Y produces a gini coefficient in the model that
     # gives the same ratio between the model implied Gini's in the USA
-    # and IND and the empirical Gini's in the USA and IND
+    # and the target country and the empirical Gini's in the USA and given
+    # by gin_to_match for the target country
     def f(
         a,
         emat_orig,
         age_wgts,
         abil_wgts,
-        gini_ind_data,
+        gini_to_match,
         gini_usa_data,
         gini_usa_model,
     ):
@@ -84,15 +80,13 @@ def get_e_interp(E, S, J, lambdas, age_wgts, plot=False):
             len(age_wgts),
             len(abil_wgts),
         ).gini()
-        error = (gini_ind_data / gini_usa_data) - (
+        error = (gini_to_match / gini_usa_data) - (
             gini_ind_model / gini_usa_model
         )
         return error
 
-    # Now find the e matrix for IND by changing the e matrix to match the gini in
-    # IND (=35.7 in WB data: https://data.worldbank.org/indicator/SI.POV.GINI))
-    # Note, USA gini in these data is 41.5
-    gini_ind_data = 35.7
+    # Note, USA gini in the World Bank data is 41.5
+    # See https://data.worldbank.org/indicator/SI.POV.GINI
     gini_usa_data = 41.5
     # Find the model implied Gini for the USA
     gini_usa_model = utils.Inequality(
@@ -109,7 +103,7 @@ def get_e_interp(E, S, J, lambdas, age_wgts, plot=False):
             usa_params.e,
             usa_params.omega_SS,
             usa_params.lambdas,
-            gini_ind_data,
+            gini_to_match,
             gini_usa_data,
             gini_usa_model,
         ),
