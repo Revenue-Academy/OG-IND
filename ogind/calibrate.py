@@ -70,7 +70,10 @@ class Calibration:
         # the USA to match the gini in IND
         # (=35.7 in WB data: https://data.worldbank.org/indicator/SI.POV.GINI))
         self.e = income.get_e_interp(
-            p.E, p.S, p.J, p.lambdas,
+            p.E,
+            p.S,
+            p.J,
+            p.lambdas,
             self.demographic_params["omega_SS"],
             plot=False,
         )
