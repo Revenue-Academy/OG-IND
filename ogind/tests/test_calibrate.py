@@ -25,6 +25,7 @@ def test_calibrate():
 def test_read_tax_func_estimate_error():
     with pytest.raises(RuntimeError):
         p = ogcore.Specifications()
+        p.tax_func_type = "linear"
         tax_func_path = os.path.join(
             CUR_PATH, "test_io_data", "TxFuncEst_policy.pkl"
         )

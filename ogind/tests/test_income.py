@@ -42,7 +42,20 @@ def test_get_e_interp_exception():
     """
     age_wgts = np.ones(80) * 1 / 80
     abil_wgts = np.array(
-        [0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.005, 0.003, 0.001, 0.001]
+        [
+            0.25,
+            0.25,
+            0.2,
+            0.1,
+            0.1,
+            0.09,
+            0.005,
+            0.004,
+            0.0009,
+            0.00005,
+            0.00004,
+            0.00001,
+        ]
     )
     with pytest.raises(RuntimeError):
-        income.get_e_interp(20, 80, 10, abil_wgts, age_wgts)
+        income.get_e_interp(20, 80, 12, abil_wgts, age_wgts)
