@@ -1,7 +1,7 @@
 from ogind import demographics, macro_params, get_micro_data, income
 import os
 import numpy as np
-from ogcore import txfunc
+from ogcore import txfunc, demographics
 from ogcore.utils import safe_read_pickle, mkdirs
 
 
@@ -55,14 +55,14 @@ class Calibration:
 
         # demographics
         self.demographic_params = demographics.get_pop_objs(
-            p.E,
-            p.S,
-            p.T,
-            1,
-            100,
-            p.start_year - 1,
-            p.start_year,
-            GraphDiag=True,
+                p.E,
+                p.S,
+                p.T,
+                0,
+                99,
+                country_id="356",
+                initial_data_year=p.start_year - 1,
+                final_data_year=p.start_year,
         )
 
         # earnings profiles
