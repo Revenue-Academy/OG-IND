@@ -1,4 +1,4 @@
-from ogind import demographics, macro_params, get_micro_data, income
+from ogind import macro_params, get_micro_data, income
 import os
 import numpy as np
 from ogcore import txfunc, demographics
