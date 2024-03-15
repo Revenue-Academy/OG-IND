@@ -55,14 +55,14 @@ class Calibration:
 
         # demographics
         self.demographic_params = demographics.get_pop_objs(
-                p.E,
-                p.S,
-                p.T,
-                0,
-                99,
-                country_id="356",
-                initial_data_year=p.start_year - 1,
-                final_data_year=p.start_year,
+            p.E,
+            p.S,
+            p.T,
+            0,
+            99,
+            country_id="356",
+            initial_data_year=p.start_year - 1,
+            final_data_year=p.start_year,
         )
 
         # earnings profiles
