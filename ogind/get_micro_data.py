@@ -4,6 +4,7 @@ This program extracts tax rate and income data from the microsimulation
 model for India (The taxcalc package from the India-PIT repo).
 ------------------------------------------------------------------------
 """
+
 from taxcalc import Records, Calculator, Policy, GSTRecords, CorpRecords
 from pandas import DataFrame
 from dask import delayed, compute
